@@ -15,7 +15,7 @@ data class Pfi(
         @JsonProperty("didUri")
         val didUri: String,
         @JsonProperty("offerings")
-        val offerings: MutableList<Offering>
+        val offerings: List<Offering>
 )
 
 data class Offering(
