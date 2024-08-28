@@ -14,11 +14,11 @@ data class Pfi(
         val name: String,
         @JsonProperty("didUri")
         val didUri: String,
-        @JsonProperty("offerings")
-        val offerings: List<Offering>
+        @JsonProperty("offeringCurrencyPairs")
+        val offeringCurrencyPairs: List<OfferingCurrencyPair>
 )
 
-data class Offering(
+data class OfferingCurrencyPair(
         @JsonProperty("fromCurrency")
         val fromCurrency: String,
         @JsonProperty("toCurrency")

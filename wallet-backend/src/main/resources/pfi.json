@@ -3,7 +3,7 @@
     "id": "7f08a535-caae-4223-81ad-dfa048519b87",
     "name": "AquaFinance Capital",
     "didUri": "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
-    "offerings": [
+    "offeringCurrencyPairs": [
       {
         "fromCurrency": "GHS",
         "toCurrency": "USDC"
@@ -26,7 +26,7 @@
     "id": "cfa9616b-eb8b-4955-89c1-8ee874bc02ee",
     "name": "Flowback Financial",
     "didUri": "did:dht:zkp5gbsqgzn69b3y5dtt5nnpjtdq6sxyukpzo68npsf79bmtb9zy",
-    "offerings": [
+    "offeringCurrencyPairs": [
       {
         "fromCurrency": "USD",
         "toCurrency": "EUR"
@@ -49,7 +49,7 @@
     "id": "071066eb-99a7-41d0-84c1-95ab7ec87849",
     "name": "Vertex Liquid Asset",
     "didUri": "did:dht:enwguxo8uzqexq14xupe4o9ymxw3nzeb9uug5ijkj9rhfbf1oy5y",
-    "offerings": [
+    "offeringCurrencyPairs": [
       {
         "fromCurrency": "EUR",
         "toCurrency": "USD"
@@ -72,7 +72,7 @@
     "id": "97e3c497-4788-4409-838b-9988d2a59ec4",
     "name": "Titanium Trust",
     "didUri": "did:dht:ozn5c51ruo7z63u1h748ug7rw5p1mq3853ytrd5gatu9a8mm8f1o",
-    "offerings": [
+    "offeringCurrencyPairs": [
       {
         "fromCurrency": "USD",
         "toCurrency": "AUD"

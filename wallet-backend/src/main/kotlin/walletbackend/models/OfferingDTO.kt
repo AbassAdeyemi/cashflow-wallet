@@ -1,24 +1,18 @@
 package walletbackend.models
 
+import walletbackend.entities.PaymentField
+import walletbackend.entities.PaymentMethod
 import java.math.BigDecimal
 
 data class OfferingDTO(
-        val pfiDID: String,
+        val id: String,
         val pfiName: String,
         val rate: BigDecimal,
-        val payInMethod: List<PaymentMethod>,
-        val payOutMethod: List<PaymentMethod>,
+        val payInMethods: List<PaymentMethod>,
+        val payOutMethods: List<PaymentMethod>,
         val payInCurrency: String,
         val payOutCurrency: String,
-        val offeringID: String
+        val ref: String
 )
 
-data class PaymentMethod(
-        val kind: String,
-        val paymentFields: List<PaymentField>
-)
 
-data class PaymentField(
-        val fieldName: String,
-        val required: Boolean
-)
