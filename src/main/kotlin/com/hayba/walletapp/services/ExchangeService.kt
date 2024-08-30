@@ -23,6 +23,10 @@ import com.hayba.walletapp.exceptions.RfqNotFoundException
 import com.hayba.walletapp.exceptions.UserNotFoundException
 import com.hayba.walletapp.models.*
 import com.hayba.walletapp.repositories.*
+import org.springframework.retry.RecoveryCallback
+import org.springframework.retry.RetryCallback
+import org.springframework.retry.RetryContext
+import org.springframework.web.servlet.function.ServerResponse.async
 import web5.sdk.credentials.PresentationExchange
 import web5.sdk.crypto.KeyManager
 import web5.sdk.dids.did.BearerDid
@@ -66,7 +70,7 @@ class ExchangeService(
                     it
             )
         }
-        val rfq = Rfq.create(
+        val externalRfq = Rfq.create(
                 to = offering.pfiDID,
                 from = rfQRequest.customerDID,
                 rfqData = CreateRfqData(
@@ -86,13 +90,14 @@ class ExchangeService(
 
         val savedRfq = rfqRepository.save(com.hayba.walletapp.entities.Rfq(
                 id = UUID.randomUUID(),
-                customerDID = rfq.metadata.from,
-                pfiDID = rfq.metadata.to,
-                exchangeId = rfq.metadata.exchangeId
+                customerDID = externalRfq.metadata.from,
+                pfiDID = externalRfq.metadata.to,
+                exchangeId = externalRfq.metadata.exchangeId,
+                jsonString = null
         ))
 
         scope.launch {
-            handlePostRFQCreationActions(rfq, externalOffering, bearerDid)
+            handlePostRFQCreationActions(externalRfq, savedRfq, externalOffering, bearerDid)
         }
 
         return RfqCreationResponse(exchangeId = savedRfq.exchangeId)
@@ -131,8 +136,7 @@ class ExchangeService(
                 exchangeId = quote.exchangeId,
                 protocol = protocol,
                 closeData = CloseData(
-                        reason = reason,
-                        success = false
+                        reason = reason
                 )
         )
 
@@ -157,16 +161,18 @@ class ExchangeService(
         if (optionalUserDid.isEmpty) return
         val bearerDid = getBearerDid(optionalUserDid.get())
         close.sign(bearerDid)
-        try {
-            log.info("Submitting close for exchangeId: {}", close.metadata.exchangeId)
-            retryTemplate.execute<Unit, RuntimeException> { TbdexHttpClient.submitClose(close) }
-        } catch (e: Exception) {
-            log.error("Could not submit close: {}", e.message)
-            e.message?.let { failureMessages.add(it) }
-        } finally {
-            if (failureMessages.isEmpty()) rfqRepository.updateExchangeStatus(close.metadata.exchangeId, ExchangeStatus.CLOSE_CREATION_COMPLETED)
-            else rfqRepository.updateExchangeStatus(close.metadata.exchangeId, ExchangeStatus.CLOSE_CREATION_FAILED)
-        }
+
+        retryTemplate.execute(
+                RetryCallback<Unit, RuntimeException> {
+                    log.info("Submitting close for exchangeId: {}", close.metadata.exchangeId)
+                    TbdexHttpClient.submitClose(close)
+                    rfqRepository.updateExchangeStatus(close.metadata.exchangeId, ExchangeStatus.CLOSE_CREATION_COMPLETED)
+                },
+                RecoveryCallback {
+                    log.info("Could not submit order: {}", it.lastThrowable?.message)
+                    rfqRepository.updateExchangeStatus(close.metadata.exchangeId, ExchangeStatus.CLOSE_CREATION_FAILED)
+                }
+        )
     }
 
     private fun createOrder(quote: com.hayba.walletapp.entities.Quote) {
@@ -183,49 +189,80 @@ class ExchangeService(
     }
 
     private fun handlePostOrderCreationActions(order: Order) {
-        val failureMessages = mutableListOf<String>()
         val optionalUserDid = getUserDid(order.metadata.from)
         if (optionalUserDid.isEmpty) return
         val bearerDid = getBearerDid(optionalUserDid.get())
         order.sign(bearerDid)
-        try {
-            log.info("Submitting order for exchangeId: {}", order.metadata.exchangeId)
-            retryTemplate.execute<Unit, RuntimeException> { TbdexHttpClient.submitOrder(order) }
-        } catch (e: Exception) {
-            log.error("Could not submit order: {}", e.message)
-            e.message?.let { failureMessages.add(it) }
-        } finally {
-            if (failureMessages.isEmpty()) rfqRepository.updateExchangeStatus(order.metadata.exchangeId, ExchangeStatus.ORDER_CREATION_COMPLETED)
-            else rfqRepository.updateExchangeStatus(order.metadata.exchangeId, ExchangeStatus.ORDER_CREATION_FAILED)
-        }
+
+        retryTemplate.execute(
+                RetryCallback<Unit, RuntimeException> {
+                    log.info("Submitting order for exchangeId: {}", order.metadata.exchangeId)
+                    TbdexHttpClient.submitOrder(order)
+                    rfqRepository.updateExchangeStatus(order.metadata.exchangeId, ExchangeStatus.ORDER_CREATION_COMPLETED)
+                },
+                RecoveryCallback {
+                    log.info("Could not submit order: {}", it.lastThrowable?.message)
+                    rfqRepository.updateExchangeStatus(order.metadata.exchangeId, ExchangeStatus.ORDER_CREATION_FAILED)
+                }
+        )
     }
 
-    private fun handlePostRFQCreationActions(rfq: Rfq, offering: Offering, bearerDid: BearerDid) {
+    private fun handlePostRFQCreationActions(externalRfq: Rfq, savedRfq: com.hayba.walletapp.entities.Rfq,
+                                             offering: Offering, bearerDid: BearerDid) {
         log.info("Handling post rfq creation actions")
-        val failureMessages = mutableListOf<String>()
         try {
-            rfq.verifyOfferingRequirements(offering)
+            externalRfq.verifyOfferingRequirements(offering)
         } catch (e: Exception) {
             log.error("Could not verify offering requirements {}", e.message)
-            e.message?.let { failureMessages.add(it) }
+            rfqRepository.updateExchangeStatus(externalRfq.metadata.exchangeId, ExchangeStatus.RFQ_CREATION_CANCELLED)
+            return
         }
-        rfq.sign(bearerDid)
-        try {
-            retryTemplate.execute<Unit, RuntimeException> { TbdexHttpClient.createExchange(rfq) }
-        } catch (e: Exception) {
-            log.error("Could not create exchange {}", e.message)
-            e.message?.let { failureMessages.add(it) }
-        } finally {
-            if (failureMessages.isEmpty()) rfqRepository.updateExchangeStatus(rfq.metadata.exchangeId, ExchangeStatus.RFQ_CREATION_COMPLETED)
-            else rfqRepository.updateExchangeStatus(rfq.metadata.exchangeId, ExchangeStatus.RFQ_CREATION_FAILED)
-        }
+        externalRfq.sign(bearerDid)
+        savedRfq.jsonString = objectMapper.writeValueAsString(externalRfq)
+        rfqRepository.save(savedRfq)
+
+        retryTemplate.execute(
+                RetryCallback<Unit, RuntimeException> {
+                    TbdexHttpClient.createExchange(externalRfq)
+                    rfqRepository.updateExchangeStatus(externalRfq.metadata.exchangeId, ExchangeStatus.RFQ_CREATION_COMPLETED)
+                },
+                RecoveryCallback {
+                    log.info("Could not create exchange: {}", it.lastThrowable?.message)
+                    rfqRepository.updateExchangeStatus(externalRfq.metadata.exchangeId, ExchangeStatus.RFQ_CREATION_FAILED)
+                }
+        )
     }
 
+
+    @Scheduled(fixedDelay = 12_000L)
+    fun retryFailedRfqs() {
+      log.info("Retrying failed rfqs")
+        val eligibleStatuses = listOf(ExchangeStatus.RFQ_CREATION_FAILED)
+        val rfqs = rfqRepository.findAllByExchangeStatusIn(eligibleStatuses)
+        scope.launch {
+               for(rfq in rfqs) {
+                val externalRfq = objectMapper.readValue(rfq.jsonString, Rfq::class.java)
+
+                async {
+                    retryTemplate.execute(
+                            RetryCallback<Unit, RuntimeException> {
+                                TbdexHttpClient.createExchange(externalRfq)
+                                rfqRepository.updateExchangeStatus(rfq.exchangeId, ExchangeStatus.RFQ_CREATION_COMPLETED)
+                            },
+                            RecoveryCallback {
+                                log.info("Could not create exchange: {}", it.lastThrowable?.message)
+                                rfqRepository.updateExchangeStatus(rfq.exchangeId, ExchangeStatus.RFQ_CREATION_CANCELLED)
+                            }
+                    )
+                }
+            }
+        }
+    }
 
     @Scheduled(fixedDelay = 80000L)
     fun pollExchange() {
         log.info("Starting to poll exchange")
-        val eligibleStatuses = mutableListOf(
+        val eligibleStatuses = listOf(
                 ExchangeStatus.RFQ_CREATION_COMPLETED,
                 ExchangeStatus.ORDER_CREATION_COMPLETED,
                 ExchangeStatus.CLOSE_CREATION_COMPLETED

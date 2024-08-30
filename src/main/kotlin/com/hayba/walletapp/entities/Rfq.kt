@@ -12,5 +12,6 @@ data class Rfq(
         val customerDID: String,
         val pfiDID: String,
         val exchangeId: String,
-        val exchangeStatus: ExchangeStatus = ExchangeStatus.RFQ_CREATION_PENDING
+        val exchangeStatus: ExchangeStatus = ExchangeStatus.RFQ_CREATION_PENDING,
+        var jsonString: String?
 )
