@@ -31,17 +31,6 @@ class BeanConfig {
         return objectMapper
     }
 
-//    @Bean
-//    fun retryTemplate(): RetryTemplate {
-//        val retryTemplate = RetryTemplate()
-//        val fixedBackOffPolicy = FixedBackOffPolicy()
-//        fixedBackOffPolicy.backOffPeriod = 3000L
-//        retryTemplate.setBackOffPolicy(fixedBackOffPolicy)
-//        val retryPolicy = SimpleRetryPolicy()
-//        retryPolicy.maxAttempts = 2
-//        retryTemplate.setRetryPolicy(retryPolicy)
-//        return retryTemplate
-//    }
 
     @Bean
     fun retryTemplate(): RetryTemplate {
@@ -51,7 +40,6 @@ class BeanConfig {
         val retryPolicy: RetryPolicy = SimpleRetryPolicy(3)
         retryTemplate.setRetryPolicy(retryPolicy)
 
-        // Backoff Policy: Exponential with Jitter
         val backOffPolicy = ExponentialBackOffPolicy().apply {
             initialInterval = 1000L  // Initial delay (1 second)
             maxInterval = 10000L     // Maximum delay (10 seconds)

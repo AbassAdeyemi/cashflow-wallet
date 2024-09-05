@@ -27,7 +27,7 @@ private val signedVcRepository: SignedVcRepository, private val objectMapper: Ob
 
     fun getMatchingOfferings(currencyPair: OrderCurrencyPair): List<OfferingDTO> {
         val (from, to) = currencyPair
-        val offerings = offeringRepository.findByPayInCurrencyAndPayOutCurrency(from, to)
+        val offerings = offeringRepository.findByCurrencyPairs(from, to)
 
         return offerings.map {
             OfferingDTO(

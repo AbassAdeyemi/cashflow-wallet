@@ -1,14 +1,6 @@
 package com.hayba.walletapp.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.server.util.*
-import kotlinx.serialization.*
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.retry.support.RetryTemplate
-import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.multipart.MultipartFile
 import com.hayba.walletapp.config.CryptoUtil
 import com.hayba.walletapp.controllers.UserController
 import com.hayba.walletapp.entities.SignedVc
@@ -21,6 +13,14 @@ import com.hayba.walletapp.models.PortableDID
 import com.hayba.walletapp.models.UserProfile
 import com.hayba.walletapp.repositories.SignedVcRepository
 import com.hayba.walletapp.repositories.UserDIDRepository
+import io.ktor.server.util.*
+import kotlinx.serialization.*
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.retry.support.RetryTemplate
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.multipart.MultipartFile
 import web5.sdk.credentials.VerifiableCredential
 import web5.sdk.crypto.KeyManager
 import web5.sdk.dids.methods.dht.CreateDidDhtOptions
@@ -81,8 +81,7 @@ class UserService(
         }
         val userDid = optionalUserDid.get()
         val decrypted = CryptoUtil.decrypt(userDid.encryptedDID, secret)
-         val jsonNode = objectMapper.readTree(decrypted)
-        log.info("decrypted: {}", decrypted)
+        val jsonNode = objectMapper.readTree(decrypted)
         // Convert the JsonNode back to a formatted string
         return objectMapper.writeValueAsString(jsonNode)
     }
@@ -100,12 +99,12 @@ class UserService(
         if (optionalDid.isPresent) {
             log.info("Portable did with didUri: {} exists", portableDID.uri)
             val credentials = mapCredentials(signedVcRepository.findAllByDidUri(portableDID.uri))
-            return UserProfile(didUri = portableDID.uri, credentials)
+            return UserProfile(portableDID.uri, credentials)
         }
         val encryptedDid = CryptoUtil.encrypt(objectMapper.writeValueAsString(portableDID), secret)
         userDIDRepository.save(UserDID(id = UUID.randomUUID(), didUri = portableDID.uri, encryptedDID = encryptedDid))
         val credentials = mapCredentials(signedVcRepository.findAllByDidUri(portableDID.uri))
-        return UserProfile(didUri = portableDID.uri, credentials)
+        return UserProfile(portableDID.uri, credentials)
     }
 
     private fun callGetCredentialApi(url: String): String {

@@ -1,10 +1,14 @@
 package com.hayba.walletapp.models
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import web5.sdk.crypto.jwk.Jwk
 import web5.sdk.dids.did.PortableDid
 import web5.sdk.dids.didcore.DidDocument
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class PortableDID(
         @JsonProperty("uri")
         val uri: String,
@@ -49,7 +53,7 @@ data class Document(
         @JsonProperty("id")
         val id: String,
 
-      //  @JsonProperty("@context")
+        @JsonProperty("@context")
         val context: List<String>?,
 
         @JsonProperty("alsoKnownAs")

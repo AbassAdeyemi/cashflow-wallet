@@ -9,15 +9,20 @@ import com.hayba.walletapp.entities.PaymentMethod
 import com.hayba.walletapp.entities.Pfi
 import com.hayba.walletapp.repositories.OfferingRepository
 import com.hayba.walletapp.repositories.PfiRepository
-import com.hayba.walletapp.services.ExchangeService
-import com.hayba.walletapp.services.UserService
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.query.Update
+import org.springframework.retry.RecoveryCallback
+import org.springframework.retry.RetryCallback
+import org.springframework.retry.support.RetryTemplate
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils
 import tbdex.sdk.httpclient.TbdexHttpClient
-import web5.sdk.crypto.KeyManager
 import java.math.BigDecimal
 import java.util.*
 
@@ -25,26 +30,24 @@ import java.util.*
 class DBInitializer(private val pfiRepository: PfiRepository,
                     private val objectMapper: ObjectMapper,
                     private val offeringRepository: OfferingRepository,
-                    private val userService: UserService,
-                    private val exchangeService: ExchangeService,
-                    private val keyManager: KeyManager) {
+                    private val retryTemplate: RetryTemplate,
+                    private val mongoTemplate: MongoTemplate) {
 
     private val initializerScope = CoroutineScope(Dispatchers.IO)
     private val log = LoggerFactory.getLogger(DBInitializer::class.java)
 
     @PostConstruct
     fun initializeDB() {
-//        try {
-//            loadPfisToDB()
-//        } catch (e: Exception) {
-//            log.error("Migration Failed: {}", e.message)
-//        }
-//        // TODO: This is a workaround for removing stale offerings.Should implement proper offering management
-//        offeringRepository.deleteAll()
-//        initializerScope.launch {
-//            loadOfferingsFromPfis()
-//        }
-//        exchangeService.handleQuoteNextStep(QuoteNextStep(quoteId = "quote_01j60aty1qf7wtdx48zr2xw831", proceed = true))
+        try {
+            loadPfisToDB()
+        } catch (e: Exception) {
+            log.error("Migration Failed: {}", e.message)
+        }
+        val pfis = pfiRepository.findAll()
+        val offeringRefs = offeringRepository.findAllByStaleIsFalse().map { it.ref }.toSet()
+        initializerScope.launch {
+            loadOfferingsFromPfis(pfis, offeringRefs)
+        }
     }
 
     private fun loadPfisToDB() {
@@ -59,30 +62,55 @@ class DBInitializer(private val pfiRepository: PfiRepository,
         return objectMapper.readValue(file.readText(), typeRef)
     }
 
-    private suspend fun loadOfferingsFromPfis() = coroutineScope {
-        val pfis = pfiRepository.findAll()
+    private suspend fun loadOfferingsFromPfis(pfis: List<Pfi>, offeringRefs: Set<String>) = coroutineScope {
         val didNameMap = pfis.associate { it.didUri to it.name }
         val result = pfis.map { pfi ->
-             async { ApiCallManager.retryableApiCall { TbdexHttpClient.getOfferings(pfiDid = pfi.didUri) } ?: emptyList() }
+            async {
+                retryTemplate.execute(
+                        RetryCallback<List<tbdex.sdk.protocol.models.Offering>, RuntimeException> {
+                            TbdexHttpClient.getOfferings(pfiDid = pfi.didUri)
+                        },
+                        RecoveryCallback {
+                            log.error("Error fetching offerings: {}", it.lastThrowable?.message)
+                            emptyList()
+                        }
+                )
+            }
         }
-        val offerings = result.awaitAll().flatten()
-        val offeringEntities = offerings.map { offering ->
-            val offeringString = objectMapper.writeValueAsString(offering)
-            Offering(
+
+        if(result.isEmpty())  {
+            log.error("Could not get any offering from pfis, Please check internet connectivity or pfis availability")
+            return@coroutineScope
+        }
+
+        val externalOfferings = result.awaitAll().flatten()
+
+        val staleOfferingRefs = getStaleOfferingRefs(
+                offeringRefs = offeringRefs,
+                externalOfferingRefs = externalOfferings.map { it.metadata.id }.toSet()
+        )
+        val offeringEntities = mutableListOf<Offering>()
+        for (externalOffering in externalOfferings) {
+            if (offeringRefs.contains(externalOffering.metadata.id)) continue; //Do not attempt saving existing offering
+            val offeringEntity = Offering(
                     id = UUID.randomUUID(),
-                    pfiDID = offering.metadata.from,
-                    pfiName = didNameMap.getValue(offering.metadata.from),
-                    rate = BigDecimal(offering.data.payoutUnitsPerPayinUnit),
-                    payInMethods = offering.data.payin.methods.map { mapTbdexPaymentMethodToPaymentMethod(it) },
-                    payOutMethods = offering.data.payout.methods.map { mapTbdexPaymentMethodToPaymentMethod(it) },
-                    payInCurrency = offering.data.payin.currencyCode,
-                    payOutCurrency = offering.data.payout.currencyCode,
-                    ref = offering.metadata.id,
-                    jsonString = offeringString
+                    pfiDID = externalOffering.metadata.from,
+                    pfiName = didNameMap.getValue(externalOffering.metadata.from),
+                    rate = BigDecimal(externalOffering.data.payoutUnitsPerPayinUnit),
+                    payInMethods = externalOffering.data.payin.methods.map { mapTbdexPaymentMethodToPaymentMethod(it) },
+                    payOutMethods = externalOffering.data.payout.methods.map { mapTbdexPaymentMethodToPaymentMethod(it) },
+                    payInCurrency = externalOffering.data.payin.currencyCode,
+                    payOutCurrency = externalOffering.data.payout.currencyCode,
+                    ref = externalOffering.metadata.id,
+                    jsonString = objectMapper.writeValueAsString(externalOffering)
             )
+            offeringEntities.add(offeringEntity)
         }
         offeringRepository.saveAll(offeringEntities)
-        log.info("Loaded {} offerings successfully into db", offeringEntities.count())
+        log.info("Loaded {} new offerings into db", offeringEntities.count())
+
+        markOfferingAsStale(staleOfferingRefs)
+        log.info("Marked {} offerings as stale", staleOfferingRefs.count())
     }
 
     private fun mapTbdexPaymentMethodToPaymentMethod(tbdexPaymentMethod: tbdex.sdk.protocol.models.PaymentMethod): PaymentMethod {
@@ -104,5 +132,25 @@ class DBInitializer(private val pfiRepository: PfiRepository,
         }
 
         return paymentFields
+    }
+
+    private fun getStaleOfferingRefs(offeringRefs: Set<String>, externalOfferingRefs: Set<String>): Set<String> {
+        return offeringRefs.subtract(externalOfferingRefs)
+    }
+
+    private fun markOfferingAsStale(refs: Set<String>) {
+        val query = Query(Criteria.where("ref").`in`(refs))
+        val update: Update = Update().set("stale", true)
+        mongoTemplate.updateMulti(query, update, Offering::class.java)
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    fun refreshOfferings() {
+        log.info("Refreshing offerings")
+        val pfis = pfiRepository.findAll()
+        val offeringRefs = offeringRepository.findAllByStaleIsFalse().map { it.ref }.toSet()
+        initializerScope.launch {
+            loadOfferingsFromPfis(pfis, offeringRefs)
+        }
     }
 }

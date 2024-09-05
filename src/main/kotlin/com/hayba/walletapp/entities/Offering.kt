@@ -17,9 +17,9 @@ data class Offering(
         val payOutMethods: List<PaymentMethod>,
         val payInCurrency: String,
         val payOutCurrency: String,
-        @Indexed(unique = true)
         val ref: String,
-        val jsonString: String
+        val jsonString: String,
+        val stale: Boolean = false
 )
 
 data class PaymentMethod(

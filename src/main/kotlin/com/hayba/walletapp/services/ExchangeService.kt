@@ -25,8 +25,6 @@ import com.hayba.walletapp.models.*
 import com.hayba.walletapp.repositories.*
 import org.springframework.retry.RecoveryCallback
 import org.springframework.retry.RetryCallback
-import org.springframework.retry.RetryContext
-import org.springframework.web.servlet.function.ServerResponse.async
 import web5.sdk.credentials.PresentationExchange
 import web5.sdk.crypto.KeyManager
 import web5.sdk.dids.did.BearerDid
@@ -49,7 +47,7 @@ class ExchangeService(
         val retryTemplate: RetryTemplate) {
 
     private val log = LoggerFactory.getLogger(ExchangeService::class.java)
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val exchangeScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     fun createRfq(rfQRequest: CreateRfQRequest): RfqCreationResponse {
         val optionalUserDid = getUserDid(rfQRequest.customerDID)
@@ -96,7 +94,7 @@ class ExchangeService(
                 jsonString = null
         ))
 
-        scope.launch {
+        exchangeScope.launch {
             handlePostRFQCreationActions(externalRfq, savedRfq, externalOffering, bearerDid)
         }
 
@@ -140,7 +138,7 @@ class ExchangeService(
                 )
         )
 
-        scope.launch {
+        exchangeScope.launch {
             handlePostCloseCreationAction(close)
         }
         rfqRepository.updateExchangeStatus(quote.exchangeId, ExchangeStatus.CLOSE_CREATION_PENDING)
@@ -156,7 +154,6 @@ class ExchangeService(
     }
 
     private fun handlePostCloseCreationAction(close: Close) {
-        val failureMessages = mutableListOf<String>()
         val optionalUserDid = getUserDid(close.metadata.from)
         if (optionalUserDid.isEmpty) return
         val bearerDid = getBearerDid(optionalUserDid.get())
@@ -167,10 +164,12 @@ class ExchangeService(
                     log.info("Submitting close for exchangeId: {}", close.metadata.exchangeId)
                     TbdexHttpClient.submitClose(close)
                     rfqRepository.updateExchangeStatus(close.metadata.exchangeId, ExchangeStatus.CLOSE_CREATION_COMPLETED)
+                    quoteRepository.updateQuoteStatus(close.metadata.exchangeId, QuoteStatus.PROCESSED)
                 },
                 RecoveryCallback {
                     log.info("Could not submit order: {}", it.lastThrowable?.message)
                     rfqRepository.updateExchangeStatus(close.metadata.exchangeId, ExchangeStatus.CLOSE_CREATION_FAILED)
+                    quoteRepository.updateQuoteStatus(close.metadata.exchangeId, QuoteStatus.PROCESSED)
                 }
         )
     }
@@ -182,7 +181,7 @@ class ExchangeService(
                 exchangeId = quote.exchangeId,
                 protocol = protocol
         )
-        scope.launch {
+        exchangeScope.launch {
             handlePostOrderCreationActions(order)
         }
         rfqRepository.updateExchangeStatus(quote.exchangeId, ExchangeStatus.ORDER_CREATION_PENDING)
@@ -199,10 +198,12 @@ class ExchangeService(
                     log.info("Submitting order for exchangeId: {}", order.metadata.exchangeId)
                     TbdexHttpClient.submitOrder(order)
                     rfqRepository.updateExchangeStatus(order.metadata.exchangeId, ExchangeStatus.ORDER_CREATION_COMPLETED)
+                    quoteRepository.updateQuoteStatus(order.metadata.exchangeId, QuoteStatus.PROCESSED)
                 },
                 RecoveryCallback {
                     log.info("Could not submit order: {}", it.lastThrowable?.message)
                     rfqRepository.updateExchangeStatus(order.metadata.exchangeId, ExchangeStatus.ORDER_CREATION_FAILED)
+                    quoteRepository.updateQuoteStatus(order.metadata.exchangeId, QuoteStatus.PROCESSED)
                 }
         )
     }
@@ -239,7 +240,7 @@ class ExchangeService(
       log.info("Retrying failed rfqs")
         val eligibleStatuses = listOf(ExchangeStatus.RFQ_CREATION_FAILED)
         val rfqs = rfqRepository.findAllByExchangeStatusIn(eligibleStatuses)
-        scope.launch {
+        exchangeScope.launch {
                for(rfq in rfqs) {
                 val externalRfq = objectMapper.readValue(rfq.jsonString, Rfq::class.java)
 
@@ -259,7 +260,7 @@ class ExchangeService(
         }
     }
 
-    @Scheduled(fixedDelay = 80000L)
+    @Scheduled(fixedDelay = 8000L)
     fun pollExchange() {
         log.info("Starting to poll exchange")
         val eligibleStatuses = listOf(
@@ -268,8 +269,8 @@ class ExchangeService(
                 ExchangeStatus.CLOSE_CREATION_COMPLETED
         )
         val rfqs = rfqRepository.findAllByExchangeStatusIn(eligibleStatuses)
-        val requests = mutableListOf<Deferred<Exchange>>()
-        scope.launch {
+        val result = mutableListOf<Deferred<Exchange>>()
+        exchangeScope.launch {
             rfqs.forEach { rfq ->
                 val optionalUserDid = userDIDRepository.findByDidUri(rfq.customerDID)
                 if (optionalUserDid.isEmpty) {
@@ -278,7 +279,7 @@ class ExchangeService(
                 }
                 val userDID = optionalUserDid.get()
                 val bearerDid = getBearerDid(userDID)
-                requests.add(
+                result.add(
                         async {
                             retryTemplate.execute<Exchange, RuntimeException> {
                                 TbdexHttpClient.getExchange(
@@ -290,7 +291,7 @@ class ExchangeService(
                         })
             }
 
-            val exchanges = requests.awaitAll()
+            val exchanges = result.awaitAll()
             processExchanges(exchanges)
         }
     }

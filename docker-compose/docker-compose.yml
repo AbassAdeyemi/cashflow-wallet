@@ -1,0 +1,23 @@
+name: 'wallet-application'
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    command: mongod --port 27017
+    volumes:
+      - mongo-data:/data/db
+
+  wallet-app:
+    image: abassadey/wallet-app
+    container_name: wallet-app
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/wallet
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo-data:
