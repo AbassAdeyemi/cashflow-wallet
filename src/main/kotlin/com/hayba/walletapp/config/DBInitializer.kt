@@ -89,6 +89,7 @@ class DBInitializer(private val pfiRepository: PfiRepository,
                 offeringRefs = offeringRefs,
                 externalOfferingRefs = externalOfferings.map { it.metadata.id }.toSet()
         )
+
         val offeringEntities = mutableListOf<Offering>()
         for (externalOffering in externalOfferings) {
             if (offeringRefs.contains(externalOffering.metadata.id)) continue; //Do not attempt saving existing offering

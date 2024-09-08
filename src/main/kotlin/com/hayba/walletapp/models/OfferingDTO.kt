@@ -11,7 +11,8 @@ data class OfferingDTO(
         val payOutMethods: List<PaymentMethod>,
         val payInCurrency: String,
         val payOutCurrency: String,
-        val ref: String
+        val ref: String,
+        val pfiRating: Float
 )
 
 

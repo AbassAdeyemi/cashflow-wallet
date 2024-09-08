@@ -82,7 +82,7 @@ class UserService(
         val userDid = optionalUserDid.get()
         val decrypted = CryptoUtil.decrypt(userDid.encryptedDID, secret)
         val jsonNode = objectMapper.readTree(decrypted)
-        // Convert the JsonNode back to a formatted string
+
         return objectMapper.writeValueAsString(jsonNode)
     }
 
