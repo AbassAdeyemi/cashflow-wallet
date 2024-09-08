@@ -46,10 +46,11 @@ class OfferingService(
 
             addFields().addField("pfiRating").withValue(
                 ConditionalOperators.ifNull(
+                    ArithmeticOperators.Round.roundValueOf(
                     ArrayOperators.arrayOf("pfiRatings").reduce(
                         ArithmeticOperators.valueOf("pfiRatings.rating").avg()
                     ).startingWith(0)
-                ).then(0)
+                ).place(1)).then(0)
             ).build(),
 
             sort(Sort.Direction.DESC, "pfiRating").and(Sort.Direction.ASC, "rate"),
