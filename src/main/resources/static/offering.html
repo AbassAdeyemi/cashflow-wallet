@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet"
+    />
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <div class="logo">Logo</div>
+        <ul class="main-menu">
+            <li class="active">
+                <a href="#dashboard" data-page="dashboard">
+                    <i class="fa-solid fa-gauge"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#existing-page" data-page="existing-page">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Existing Quote</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="matching-peer-body">
+            <div class="matching-peer">
+                <h3>Matching Pair</h3>
+                <table id="match">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Rate</th>
+                        <!-- <th>Est. reponse time</th> -->
+                        <th>Trade</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="resultContainer" class="hidden">
+                <h3>Create KYC Credentials</h3>
+                <form class="form-submit">
+                    <div class="form-data">
+                        <label for="name" class="cred-label">Name:</label>
+                        <input type="text" name="" class="name-input" />
+                    </div>
+                    <div class="form-data">
+                        <label for="country code" class="cred-label">Country code:</label>
+                        <input type="text" name="code" class="code-input"/>
+                    </div>
+                    <button class="credential-button" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/js/offering.js"></script>
+<script src="/js/script.js"></script>
+<script>
+</script>
+</body>
+</html>

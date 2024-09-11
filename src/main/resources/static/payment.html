@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet"
+    />
+</head>
+<div class="container">
+    <div class="sidebar">
+        <div class="logo">Logo</div>
+        <ul class="main-menu">
+            <li class="active">
+                <a href="#dashboard" data-page="dashboard">
+                    <i class="fa-solid fa-gauge"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#existing-page" data-page="existing-page">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Existing Quote</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="payment-body">
+            <div class="payment-container">
+                <h3>Payment Method</h3>
+                <div class="bank-info-container">
+                    <h4>How do you want to pay the partner?</h4>
+                    <div class="bank-container"></div>
+                </div>
+                <div class="bank-info-container-2">
+                    <h4>How do you want the partner to pay you?</h4>
+                    <div class="bank-container-2"></div>
+                </div>
+                <div class="transaction-detail-container">
+                    <h4>Enter Transaction Details</h4>
+                    <div class="transaction-detail"></div>
+
+                </div>
+                <div class="request">
+                    <button class="request-btn">Request Quote</button>
+                </div>
+            </div>
+            <div class="roller"></div>
+        </div>
+    </div>
+
+</div>
+<script src="/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/js/payment-method.js"></script>
+<script src="/js/script.js"></script>
+</body>
+</html>

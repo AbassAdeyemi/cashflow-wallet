@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet"
+    />
+</head>
+<body>
+<!-- **** Main page **** -->
+<div class="container">
+    <div class="sidebar">
+        <div class="logo">Logo</div>
+        <ul class="main-menu">
+            <li class="active">
+                <a href="#dashboard" data-page="dashboard">
+                    <i class="fa-solid fa-gauge"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#existing-page" data-page="existing-page">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Existing Quote</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="content">
+        <div id="dashboard" class="main-body">
+            <div class="header">
+                <h3>Dashboard</h3>
+            </div>
+            <div class="balance-container">
+                <div class="balance">
+                    <p>Balance:</p>
+                    <span>100$</span>
+                </div>
+                <div class="trade-container">
+                    <a href="#trade" data-page="trade">Trade Now</a>
+                    <a href="#" class="tag">Fund Wallet</a>
+                </div>
+            </div>
+            <div class="kyc-container">
+                <h3>KYC Details</h3>
+                <div class="userKyc">
+                    <div class="issue">
+                        <span for="">Issuer: </span>
+                        <p class="issuer"></p>
+                    </div>
+                    <div class="issue-date">
+                        <span for="">Issuance Date: </span>
+                        <p class="issuanceDate"></p>
+                    </div>
+                    <div class="exp-date">
+                        <span for="">Expiration Date: </span>
+                        <p class="expiration"></p>
+                    </div>
+                </div>
+                <!-- <a>Create KYC?</a> -->
+            </div>
+            <div class="recent-transactions">
+                <h3>Recent Transactions</h3>
+                <span>No recent transactions</span>
+            </div>
+        </div>
+
+        <!-- **** Trading page **** -->
+        <div id="trade" class="main-body hidden">
+            <div class="search">
+                <input
+                        type="text"
+                        placeholder="Select currency pair.."
+                        class="search-input"
+                />
+            </div>
+            <div class="currency">
+                <table id="currency-table">
+                    <thead>
+                    <tr>
+                        <th>FROM</th>
+                        <th>TO</th>
+                        <th>Trade</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <!-- <td></td>
+                        <td></td> -->
+                        <!-- <td><a href="#match" data-page="match">View Trade</a></td> -->
+                    </tr>
+                    </tbody>
+                </table>
+                <button id="see-more">More Currencies</button>
+            </div>
+
+            <!-- Matching Peers -->
+            <div class="match">
+                <h3>Matching Pairs</h3>
+                <p>No matching pair at the moment</p>
+            </div>
+        </div>
+
+        <!-- **** Matching peer **** -->
+
+        <!-- Payment Page -->
+
+
+        <!-- Quote Page -->
+
+
+        <!-- **** Existing Quotes Page Slide **** -->
+        <div id="existing-page" class="main-body">
+            <div class="existing">
+                <h3>Existing Quotes</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Currency</th>
+                        <th>Expires in</th>
+                        <th>Trade?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <!-- <td>200</td>
+                        <td>GHS</td>
+                        <td>2 Days</td>
+                        <td><a href="#match" data-page="match">Checkout</a></td> -->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- <div class="prev-partners">
+                <h3>Previous Matching Peers</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parner's ID</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Currency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Majekodunmi</td>
+                            <td>Successful</td>
+                            <td>500</td>
+                            <td>USD</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>       -->
+        </div>
+    </div>
+</div>
+<script src="/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/currency-pair.js"></script>
+<script src="/js/script.js"></script>
+</body>
+</html>
