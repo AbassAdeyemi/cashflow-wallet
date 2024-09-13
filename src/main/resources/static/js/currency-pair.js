@@ -1,7 +1,7 @@
 // Available Currency pairs
 $(document).ready(function(){
-    var currencyApi = `/offerings/currency-pairs`;
-    var url = baseUrl + currencyApi;
+    const currencyApi = `/offerings/currency-pairs`;
+    const url = baseUrl + currencyApi;
 
     currencyPairs(url);
 })
@@ -18,24 +18,25 @@ function currencyPairs(url) {
 }
 
 function createTable(items) {
-    var $tableBody = $('#currency-table tbody');
-    $tableBody.empty();
+    const tableBody = $('#currency-table tbody');
+    tableBody.empty();
 
     for (let i = 0; i < 5; i++) {
         const off = items[i];
 
-        var row = $('<tr></tr>');
+        const row = $('<tr></tr>');
 
         row.append('<td>' + off.fromCurrency + '</td>');
         row.append('<td>' + off.toCurrency + '</td>');
 
-        var button = $(`<button class="view-btn" data-from="${off.fromCurrency}" data-to="${off.toCurrency}">View trade</button>`);
+        const button = $(`<button class="view-btn" data-from="${off.fromCurrency}" 
+        data-to="${off.toCurrency}">View Offering</button>`);
 
-        var buttonCell = $('<td></td>');
+        const buttonCell = $('<td></td>');
         buttonCell.append(button);
         row.append(buttonCell);
 
-        $tableBody.append(row);
+        tableBody.append(row);
     }
 }
 
@@ -47,10 +48,6 @@ $('#currency-table tbody').on('click', '.view-btn', function() {
 
     localStorage.setItem("from", fromCurrency);
     localStorage.setItem("to", toCurrency);
-    window.location.href = '../offering.html';
-
-    const $resultContainer = $('#resultContainer');
-
-    // localStorage.setItem('firstLoadDone', 'true');
+    window.location.href = '../offering';
 
 });

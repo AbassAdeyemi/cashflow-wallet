@@ -14,6 +14,7 @@
     />
 </head>
 <body>
+
 <div class="container">
     <div class="sidebar">
         <div class="logo">Logo</div>
@@ -34,49 +35,33 @@
         </ul>
     </div>
     <div class="content">
-        <div class="matching-offering-body">
-            <div class="matching-offering">
-                <h3>Matching Offerings</h3>
-                <table id="match">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Rate</th>
-                        <th>Kind</th>
-                        <th>Average rating</th>
-                        <!-- <th>Est. reponse time</th> -->
-                        <th>Trade</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="ratings-body">
+            <div class="ratings-container">
+                <div class="congrat-container">
+                    <p>Transaction Successful!!</p>
+                    <i class="fa-solid fa-square-check"></i>
+                </div>
 
-            <div id="resultContainer" class="hidden">
-                <h3>Create KYC Credentials</h3>
-                <form class="form-submit">
-                    <div class="form-data">
-                        <label for="name" class="cred-label">Name:</label>
-                        <input type="text" name="" class="name-input" />
+                <h3 class="rate-partner">Rate Partner</h3>
+
+                <div class="rating-stars">
+                    <div class="rating-stars-star">
+                        <span class="rating-star" data-value="1">&#9733;</span>
+                        <span class="rating-star" data-value="2">&#9733;</span>
+                        <span class="rating-star" data-value="3">&#9733;</span>
+                        <span class="rating-star" data-value="4">&#9733;</span>
+                        <span class="rating-star" data-value="5">&#9733;</span>
+
                     </div>
-                    <div class="form-data">
-                        <label for="country code" class="cred-label">Country code:</label>
-                        <input type="text" name="code" class="code-input"/>
-                    </div>
-                    <button class="credential-button" type="submit">Submit</button>
-                </form>
+                    <button id="submit-rating">Submit Rating</button>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
-
-
 <script src="/webjars/jquery/3.7.1/jquery.js"></script>
-<script src="/js/offering.js"></script>
+<script src="/js/rating.js"></script>
 <script src="/js/script.js"></script>
-<script>
-</script>
 </body>
 </html>

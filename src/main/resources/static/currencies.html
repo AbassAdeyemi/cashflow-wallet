@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style.css"/>
     <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link
             href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
             rel="stylesheet"
@@ -34,50 +34,42 @@
         </ul>
     </div>
     <div class="content">
-        <div class="quote-body">
-            <div class="quote-container hidden">
-                <h3>Quote</h3>
-                <div class="quote">
-
-
-                </div>
-                <div class="quote-link">
-                    <p><button class="proceed" data-page="transaction">Proceed</button></p>
-                    <p><button class="cancel" >Cancel</button></p>
-                </div>
+        <div id="trade" class="currencies-body">
+            <div class="search">
+                <input
+                        type="text"
+                        placeholder="Select currency pair.."
+                        class="search-input"
+                />
             </div>
-            <div class="existing-quote-container">
-                <h4>Existing Quotes</h4>
-                <table>
+            <div class="currency">
+                <table id="currency-table">
                     <thead>
                     <tr>
-                        <th>Pay-in Amount</th>
-                        <th>Pay-in Currency</th>
-                        <th>Pay-out Amount</th>
-                        <th>Pay-out Currency</th>
-                        <!-- <th>Rate</th> -->
-                        <th>Expiration</th>
-                        <th>Status</th>
+                        <th>FROM</th>
+                        <th>TO</th>
                         <th>Trade</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <!-- <td>200</td>
-                        <td>GHS</td>
-                        <td>2 Days</td> -->
+
                     </tr>
                     </tbody>
                 </table>
+                <button id="see-more">More Currencies</button>
             </div>
-        </div>
-        <div id="rollerOverlay" class="overlay">
-            <div class="roller"></div>
+
+            <!-- Matching Peers -->
+<!--            <div class="match">-->
+<!--                <h3>Matching Pairs</h3>-->
+<!--                <p>No matching pair at the moment</p>-->
+<!--            </div>-->
         </div>
     </div>
 </div>
 <script src="/webjars/jquery/3.7.1/jquery.js"></script>
-<script src="/js/quote.js"></script>
+<script src="/js/currency-pair.js"></script>
 <script src="/js/script.js"></script>
 </body>
 </html>

@@ -1,27 +1,81 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const links = document.querySelectorAll('a');
-    const pages = document.querySelectorAll('.content .main-body');
+const baseUrl = "http://localhost:8082";
 
-    function showPage(pageId) {
-        pages.forEach(page => {
-            if (page.id === pageId) {
-                page.classList.add('show');
-            } else {
-                page.classList.remove('show');
-            }
-        });
-    }
+// document.addEventListener('DOMContentLoaded', () => {
+//     const links = document.querySelectorAll('a');
+//     const pages = document.querySelectorAll('.content .main-body');
+//
+//     function showPage(pageId) {
+//         pages.forEach(page => {
+//             if (page.id === pageId) {
+//                 page.classList.add('show');
+//             } else {
+//                 page.classList.remove('show');
+//             }
+//         });
+//     }
+//
+//     links.forEach(link => {
+//         link.addEventListener('click', (e) => {
+//             e.preventDefault();
+//             const pageId = link.getAttribute('data-page');
+//             showPage(pageId);
+//         });
+//     });
+//
+//     showPage('dashboard');
+// });
 
-    links.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const pageId = link.getAttribute('data-page');
-            showPage(pageId);
-        });
+
+const didUri = localStorage.getItem("didUri");
+const downloadUrl =`${baseUrl}/users/${didUri}/download`;
+
+$('.downloadKey').on('click', function() {
+    console.log(downloadUrl)
+    $.ajax({
+        url: downloadUrl,
+        type: 'GET',
+        success: function(data) {
+            console.log(data);
+            downloadFile(data)
+        }
     });
-
-    showPage('dashboard');
 });
+
+async function downloadFile(data) {
+    console.log(data);
+
+    const blob = new Blob([data], { type: 'text/plain' });
+
+    // This part is to to check if the browser actually supports this file system access Api
+    if (window.showSaveFilePicker) {
+        try {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: 'key.txt',
+                types: [
+                    {
+                        description: 'Text Files',
+                        accept: { 'text/plain': ['.txt'] }
+                    }
+                ]
+            });
+
+            const writableStream = await handle.createWritable();
+
+            await writableStream.write(blob);
+
+            await writableStream.close();
+
+            console.log('File saved successfully!');
+            window.location.href = "../dashboard.html"
+        } catch (err) {
+            console.error('Error saving file:', err);
+            window.location.href = "../dashboard.html"
+        }
+    } else {
+        console.log('This API is not supported in this browser.');
+    }
+}
+
 
 const loginContainer = document.getElementById('login-container');
 const overlay = document.getElementById('overlay');
@@ -37,4 +91,11 @@ openOverlay.addEventListener('click', function(event) {
 closeOverlay.addEventListener('click', function() {
     overlay.style.display = 'none';
     loginContainer.style.filter = 'none';
+});
+
+window.addEventListener('click', function(event) {
+    if (event.target === overlay) {
+        overlay.style.display = 'none';
+        loginContainer.style.filter = 'none';
+    }
 });

@@ -1,165 +1,177 @@
-const baseUrl = "http://localhost:8082";
-
 $(document).ready(function() {
-    var payInMethod = JSON.parse(localStorage.getItem('payInMethod'));
-    var payOutMethod = JSON.parse(localStorage.getItem('payOutMethod'));
-    var rate = localStorage.getItem("rate");
-    var payInCurrency = localStorage.getItem("from");
-    var payOutCurrency = localStorage.getItem("to");
+    const payInMethod = JSON.parse(localStorage.getItem('payInMethod'));
+    const payOutMethod = JSON.parse(localStorage.getItem('payOutMethod'));
+    const rate = localStorage.getItem("rate");
+    const payInMethodKind = localStorage.getItem("payInMethodKind")
+    const payOutMethodKind = localStorage.getItem("payOutMethodKind")
+    const payInCurrency = localStorage.getItem("from");
+    const payOutCurrency = localStorage.getItem("to");
 
-    paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOutCurrency);
+    paymentMethodBody(payInMethod,
+        payOutMethod, rate,
+        payInCurrency, payOutCurrency,
+        payInMethodKind, payOutMethodKind
+    );
 })
 
-function paymentMethodBody(payIn, payOut, rate, payInCurrency, payOutCurrency) {
+function paymentMethodBody(payInMethod, payOutMethod,
+                           rate, payInCurrency,
+                           payOutCurrency, payInMethodKind,
+                           payOutMethodKind) {
     var payInContainer = $(".bank-info-container .bank-container");
     var payOutContainer = $(".bank-info-container-2 .bank-container-2");
     var conversionFields = $(".transaction-detail-container .transaction-detail")
 
-    if(payIn !== null) {
-        const div = attachPaymentFields(payIn)
+    let payInHtmls = []
+    let payOutHtmls = []
+    if (payInMethod !== null) {
+        const {div, htmls} = attachPaymentFields(payInMethod)
+        payInHtmls = htmls
         payInContainer.append(div)
     } else {
         $('.bank-info-container').css({'display': 'none'})
     }
 
-    if(payOut !== null) {
-        const div = attachPaymentFields(payOut)
+    if (payOutMethod !== null) {
+        const {div, htmls} = attachPaymentFields(payOutMethod)
+        payOutHtmls = htmls
         payOutContainer.append(div)
     } else {
         $(".bank-info-container-2").css({'display': 'none'})
     }
 
+    const div = $('<div class="div"></div>');
+    div.append('<label class="lab">You send: </label>')
+    const sendInput = $(`<input class="currency-input send-input" placeholder="${payInCurrency}">`)
+    div.append(sendInput)
+    div.append('<label class="lab">You receive: </label>')
+    const receiveInput = $(`<input class="currency-input" placeholder="${payOutCurrency}">`)
+    div.append(receiveInput)
+    conversionFields.append(div)
 
-    function attachPaymentFields(paymentMethod) {
-        const div = $('<div class="div"></div>');
+    sendInput.on('input', function() {
+        let amount = parseFloat(sendInput.val());
 
-        for (const field of paymentMethod.paymentFields) {
-            div.append('<label class="label-in">' + field.fieldName + '</label>')
-            div.append(`<input class="input-in" type="text", required="${field.required}">`);
+        if (!isNaN(amount)) {
+            let convertedAmount = amount * `${rate}`;
+            receiveInput.val(convertedAmount.toFixed(2));
+        } else {
+            receiveInput.val('');
         }
-        return div
-    }
+    })
 
 
-    // conversion fields
-    currenciesConversion();
 
-    function currenciesConversion() {
-        var div = $('<div class="div"></div>');
-        var inputSend;
-        var inputReceive;
-        const currencies = [
-            {
-                "label": "You send:",
-                "input": `${payInCurrency}`
-            },
-            {
-                "label": "You receive:",
-                "input": `${payOutCurrency}`
+    $('.request-btn').on('click', function() {
+
+        const payInDetails = payInHtmls.map(html => {
+            const label = html.label
+            const input = html.input
+            return {
+                fieldName: label.text(),
+                fieldValue: input.val
             }
-
-        ]
-
-        currencies.forEach((currency, index) => {
-
-            div.append('<label class="lab">'+ currency.label +'</label>');
-            var input = $(`<input placeholder="${currency.input}"></input>`).attr('type', 'number').addClass('currency-input');
-
-            if (index === 0) {
-                inputSend = input;
-                inputSend.addClass("send-input")
-            } else if (index === 1) {
-                inputReceive = input;
-                inputReceive.prop('readonly', true);
-                // inputReceive.addClass('readonly-input');
-            }
-
-            div.append(input);
         })
 
-        conversionFields.append(div);
-
-        inputSend.on('input', function() {
-            let amount = parseFloat(inputSend.val());
-
-            if (!isNaN(amount)) {
-                let convertedAmount = amount * `${rate}`;
-                inputReceive.val(convertedAmount.toFixed(2));
-            } else {
-                inputReceive.val('');
+        const payOutDetails = payOutHtmls.map(html => {
+            const label = html.label
+            const input = html.input
+            return {
+                fieldName: label.text(),
+                fieldValue: input.val()
             }
-        });
+        })
 
+                payIn = {
+                    paymentMethodKind: payInMethod == null? payInMethodKind : payInMethod.kind,
+                    paymentMethodValues: []
+                }
 
-        $('.request-btn').on('click', function() {
+                payOut = {
+                    paymentMethodKind: payOutMethod == null? payOutMethodKind : payOutMethod.kind,
+                    paymentMethodValues: []
+                }
 
-            var paymentInMethodKind = `${payInCurrency}`;
-            var paymentOutMethodKind = `${payOutCurrency}`;
-            var amount = inputSend.val();
-            var fieldNameIn = $('.input-in').val();
-            var fieldNameOut = $('.input-out').val();
-            var labelIn = $('label-in')
-            var labelOut = $('label-out')
+                payInDetails.forEach(payInDetail => payIn.paymentMethodValues.push(payInDetail))
+                payOutDetails.forEach(payOutDetail => payOut.paymentMethodValues.push(payOutDetail))
 
-            var offeringRef = localStorage.getItem("offeringRef");
-            var customerDID = localStorage.getItem("didUri");
+            const offeringRef = localStorage.getItem("offeringRef");
+            const customerDID = localStorage.getItem("didUri");
 
-            var data = {
+            const data = {
                 offeringRef: offeringRef,
-                payin: {
-                    paymentMethodKind: paymentInMethodKind,
-                    paymentMethodValues: [
-                        {
-                            fieldName: labelIn,
-                            fieldValue: fieldNameIn
-                        },
-                        {
-                            fieldName: labelIn,
-                            fieldValue: fieldNameIn
-                        }
-                    ]
-                },
-                payout: {
-                    paymentMethodKind: paymentOutMethodKind,
-                    paymentMethodValues: [
-                        {
-                            fieldName: labelOut,
-                            fieldValue: fieldNameOut
-                        },
-                        {
-                            fieldName: labelOut,
-                            fieldValue: fieldNameOut
-                        }
-                    ]
-                },
+                payin: payIn,
+                payout: payOut,
                 customerDID: customerDID,
-                amount: amount
+                amount: sendInput.val()
             };
-            // window.location.href = '/quote.html';
 
-            console.log(data.payin);
+
             $.ajax({
                 url: 'http://localhost:8082/exchanges/rfqs',
                 type: 'POST',
                 data: JSON.stringify(data),
                 contentType: 'application/json',
                 success: function(response) {
-                    console.log(response);
-
+                    console.log(response.exchangeId)
+                    localStorage.setItem("exchangeId", response.exchangeId)
+                    $('#rollerOverlay').css('display', 'flex');
+                    $('.roller').show();
+                    checkRfqProcessed(localStorage.getItem("exchangeId"))
                 },
                 error: function() {
                     console.log('Submission failed:');
                 }
             });
 
-            function lazyLoadPage() {
-                $('request-btn').on('click', function (
-
-                ))
-            }
-
         });
 
+}
+
+
+function attachPaymentFields(paymentMethod) {
+
+    const htmls = []
+    const div = $('<div class="div"></div>');
+    for (const field of paymentMethod.paymentFields) {
+        const label = $('<label class="label-in">' + field.fieldName + '</label>')
+        const input = $(`<input class="input-in" type="text" required="${field.required}">`);
+        div.append(label)
+        div.append(input)
+        const html = {label: label, input: input}
+        htmls.push(html)
     }
 
+    return {div, htmls}
 }
+
+function checkRfqProcessed(exchangeId) {
+    const maxPollCount = 4
+    let pollCount = 0;
+    const intervalTime = 4000; // 4 seconds
+
+    const intervalId = setInterval(function() {
+
+            $.ajax({
+                url: `http://localhost:8082/exchanges/rfqs/${exchangeId}/is-processed`,
+                method: 'GET'
+            })
+                .done(function (response) {
+                    if (response === true) {
+                        clearInterval(intervalId);
+                        window.location.href = "../quote"
+                    }
+                })
+                .fail(function (xhr, status, error) {
+                    console.error('Error in API call:', error);
+                })
+                .always(function () {
+                    if (pollCount >= maxPollCount) {
+                        console.log('Max poll count reached. Stopping.');
+                        clearInterval(intervalId);
+                    }
+                });
+            pollCount++;
+    }, intervalTime);
+}
+

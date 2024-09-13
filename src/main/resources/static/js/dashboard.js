@@ -1,5 +1,3 @@
-const baseUrl = "http://localhost:8082";
-
 $(document).ready(function() {
     const didUri = localStorage.getItem('didUri');
     if (didUri !== null) {
@@ -8,7 +6,7 @@ $(document).ready(function() {
     } else {
         // remember to add a text on the import card that says; user wasn't found, gotyour keys? <-upload->, if not register.
         if (window.location.pathname !== '../import.html') {
-            window.location.href = '../import.html';
+            window.location.href = '../import';
         }
         console.log("User ID not found in localStorage");
     }
@@ -32,5 +30,6 @@ function generateUserProfile(profileData) {
         $('.issuer').html(credential.issuer);
         $('.issuanceDate').html(credential.issuanceDate);
         $('.expiration').html(credential.expirationDate);
+        $('.credType').html(credential.type)
     }
 }

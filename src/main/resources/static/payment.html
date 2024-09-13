@@ -18,20 +18,20 @@
         <div class="logo">Logo</div>
         <ul class="main-menu">
             <li class="active">
-                <a href="#dashboard" data-page="dashboard">
+                <a href="dashboard">
                     <i class="fa-solid fa-gauge"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="#existing-page" data-page="existing-page">
+                <a href="quote">
                     <i class="fa-solid fa-circle-info"></i>
                     <span>Existing Quote</span>
                 </a>
             </li>
+
         </ul>
     </div>
-
     <div class="content">
         <div class="payment-body">
             <div class="payment-container">
@@ -53,7 +53,9 @@
                     <button class="request-btn">Request Quote</button>
                 </div>
             </div>
-            <div class="roller"></div>
+            <div id="rollerOverlay" class="overlay">
+                <div class="roller"></div>
+            </div>
         </div>
     </div>
 

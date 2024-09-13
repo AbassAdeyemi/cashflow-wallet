@@ -12,8 +12,10 @@ class WebConfig: WebMvcConfigurer {
         registry.addViewController("/").setViewName("forward:/import.html")
         registry.addViewController("/import").setViewName("forward:/import.html")
         registry.addViewController("/dashboard").setViewName("forward:/dashboard.html")
+        registry.addViewController("/currencies").setViewName("forward:/currencies.html")
         registry.addViewController("/offering").setViewName("forward:/offering.html")
         registry.addViewController("/payment").setViewName("forward:/payment.html")
         registry.addViewController("/quote").setViewName("forward:/quote.html")
+        registry.addViewController("/rating").setViewName("forward:/rating.html")
     }
 }

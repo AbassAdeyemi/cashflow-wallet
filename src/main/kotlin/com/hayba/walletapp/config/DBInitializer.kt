@@ -78,12 +78,12 @@ class DBInitializer(private val pfiRepository: PfiRepository,
             }
         }
 
-        if(result.isEmpty())  {
+        val externalOfferings = result.awaitAll().flatten()
+
+        if(externalOfferings.isEmpty())  {
             log.error("Could not get any offering from pfis, Please check internet connectivity or pfis availability")
             return@coroutineScope
         }
-
-        val externalOfferings = result.awaitAll().flatten()
 
         val staleOfferingRefs = getStaleOfferingRefs(
                 offeringRefs = offeringRefs,

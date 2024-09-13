@@ -17,11 +17,10 @@
 <!--*** login ***-->
 <div class="login-section">
     <div id="login-container">
-        <div class="but">
-            <p>
-                <button id="loginButton">Import Key</button>
-            </p>
-        </div>
+        <form class="but" id="upload-form" enctype="multipart/form-data">
+            <input type="file" id="file-input" name="file"/>
+            <button id="loginButton" type="submit">Import Key</button>
+        </form>
         <div class="generate-key">
             <span>Don't yet have a key? <a href="" id="openOverlay">Register</a></span>
         </div>

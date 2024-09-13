@@ -20,21 +20,28 @@
         <div class="logo">Logo</div>
         <ul class="main-menu">
             <li class="active">
-                <a href="#dashboard" data-page="dashboard">
+                <a href="dashboard">
                     <i class="fa-solid fa-gauge"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="#existing-page" data-page="existing-page">
+                <a href="quote" >
                     <i class="fa-solid fa-circle-info"></i>
                     <span>Existing Quote</span>
                 </a>
             </li>
+            <li>
+                <a href="dashboard" class="downloadKey">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Download Key</span>
+                </a>
+            </li>
         </ul>
     </div>
+
     <div class="content">
-        <div id="dashboard" class="main-body">
+        <div id="dashboard" class="dashboard-body">
             <div class="header">
                 <h3>Dashboard</h3>
             </div>
@@ -44,16 +51,20 @@
                     <span>100$</span>
                 </div>
                 <div class="trade-container">
-                    <a href="#trade" data-page="trade">Trade Now</a>
+                    <a href="currencies">Trade Now</a>
                     <a href="#" class="tag">Fund Wallet</a>
                 </div>
             </div>
             <div class="kyc-container">
-                <h3>KYC Details</h3>
+                <h3>KCC Details</h3>
                 <div class="userKyc">
                     <div class="issue">
                         <span for="">Issuer: </span>
                         <p class="issuer"></p>
+                    </div>
+                    <div class="cred-type">
+                        <span for="">Type: </span>
+                        <p class="credType"></p>
                     </div>
                     <div class="issue-date">
                         <span for="">Issuance Date: </span>
@@ -64,7 +75,6 @@
                         <p class="expiration"></p>
                     </div>
                 </div>
-                <!-- <a>Create KYC?</a> -->
             </div>
             <div class="recent-transactions">
                 <h3>Recent Transactions</h3>
@@ -72,100 +82,10 @@
             </div>
         </div>
 
-        <!-- **** Trading page **** -->
-        <div id="trade" class="main-body hidden">
-            <div class="search">
-                <input
-                        type="text"
-                        placeholder="Select currency pair.."
-                        class="search-input"
-                />
-            </div>
-            <div class="currency">
-                <table id="currency-table">
-                    <thead>
-                    <tr>
-                        <th>FROM</th>
-                        <th>TO</th>
-                        <th>Trade</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <!-- <td></td>
-                        <td></td> -->
-                        <!-- <td><a href="#match" data-page="match">View Trade</a></td> -->
-                    </tr>
-                    </tbody>
-                </table>
-                <button id="see-more">More Currencies</button>
-            </div>
-
-            <!-- Matching Peers -->
-            <div class="match">
-                <h3>Matching Pairs</h3>
-                <p>No matching pair at the moment</p>
-            </div>
-        </div>
-
-        <!-- **** Matching peer **** -->
-
-        <!-- Payment Page -->
-
-
-        <!-- Quote Page -->
-
-
-        <!-- **** Existing Quotes Page Slide **** -->
-        <div id="existing-page" class="main-body">
-            <div class="existing">
-                <h3>Existing Quotes</h3>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>Currency</th>
-                        <th>Expires in</th>
-                        <th>Trade?</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <!-- <td>200</td>
-                        <td>GHS</td>
-                        <td>2 Days</td>
-                        <td><a href="#match" data-page="match">Checkout</a></td> -->
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- <div class="prev-partners">
-                <h3>Previous Matching Peers</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Parner's ID</th>
-                            <th>Status</th>
-                            <th>Amount</th>
-                            <th>Currency</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Majekodunmi</td>
-                            <td>Successful</td>
-                            <td>500</td>
-                            <td>USD</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>       -->
-        </div>
     </div>
 </div>
 <script src="/webjars/jquery/3.7.1/jquery.js"></script>
 <script src="/js/dashboard.js"></script>
-<script src="/js/currency-pair.js"></script>
 <script src="/js/script.js"></script>
 </body>
 </html>
