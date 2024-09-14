@@ -11,9 +11,8 @@ of sending or receiving payments across borders.
 
 - **_Profitability:_** The wallet achieves profitability by charging a fixed amount on each 
 transaction. Users are required to fund their wallets with a certain amount of money
-that is enough to pay for the transaction fees before attempting to request for quotes,
-although, actual fee is deducted when a user proceeds to create an order. The fee collection 
-is achieved through a blockchain integration and using a stablecoin known as USDC.
+that is enough to pay for the transaction fees before attempting to proceed to create an order. 
+The fee collection is achieved through a blockchain integration and using a stablecoin known as USDC.
 Due to the timeline and scope of the project, the actual blockchain integration is not currently
 available in the app but there is a fund wallet button on the dashboard that simulates
 the adding of funds.

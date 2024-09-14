@@ -32,6 +32,7 @@ function displayLatestQuote(quote) {
     pTags.push($('<p class="quote-content"></p>').text('Your Currency: ' + quote.payin.currencyCode))
     pTags.push($('<p class="quote-content"></p>').text('Amount To Receive: ' + quote.payout.amount))
     pTags.push($('<p class="quote-content"></p>').text('Pfi Currency: ' + quote.payout.currencyCode))
+    pTags.push($('<p class="quote-content"></p>').text('Wallet Fee: 0.05$'))
     if(quote.payin.paymentInstruction) {
         if(quote.payin.paymentInstruction?.link) {
             pTags.push($('<p class="quote-content"></p>').text('Payment Link: ' + quote.payin.paymentInstruction.link))
@@ -110,29 +111,38 @@ function existingQuoteTable(items) {
   })
 
 const quoteLink = $('.quote-link')
+const walletFee = 0.05
 
 quoteLink.on('click', '.proceed', function (){
 
-    $('#rollerOverlay').css('display', 'flex');
-    $('.roller').show();
-    const data = {
-        exchangeId: localStorage.getItem("exchangeId"),
-        proceed: true
-    }
+    const balance = parseFloat(localStorage.getItem("balance"))
 
-    $.ajax({
-        url: baseUrl + '/exchanges/quotes',
-        type: 'POST',
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        success: function() {
-            checkOrderCompleted(data.exchangeId)
-        },
-        error: function() {
-            console.log('Submission failed:');
+    if(balance < walletFee) {
+        $('.error-html p').text("Please fund wallet to pay wallet fee for this transaction")
+        $('.error-html').removeClass("hidden")
+    } else {
+        const newBalance = balance - walletFee
+        localStorage.setItem("balance", JSON.stringify(newBalance))
+        $('#rollerOverlay').css('display', 'flex');
+        $('.roller').show();
+        const data = {
+            exchangeId: localStorage.getItem("exchangeId"),
+            proceed: true
         }
-    });
 
+        $.ajax({
+            url: baseUrl + '/exchanges/quotes',
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function() {
+                checkOrderCompleted(data.exchangeId)
+            },
+            error: function() {
+                console.log('Submission failed:');
+            }
+        });
+    }
 });
 
 quoteLink.on('click', '.cancel', function (){
@@ -158,9 +168,9 @@ quoteLink.on('click', '.cancel', function (){
 
 
 function checkOrderCompleted(customerDID) {
-    const maxPollCount = 6
+    const maxPollCount = 4
     let pollCount = 0;
-    const intervalTime = 6000; // 6 seconds
+    const intervalTime = 4000; // 6 seconds
 
     const intervalId = setInterval(function() {
 
@@ -199,8 +209,8 @@ function hideRollerAndDisplayError() {
     $('.roller').hide()
     $('.error-html p').text('Error occurred. Could not process quote')
     $('.error-html').removeClass('hidden')
-    $('#error-cancel').on('click', () => {
-        $('.error-html').addClass('hidden')
-    })
-
 }
+
+$('#error-cancel').on('click', () => {
+    $('.error-html').addClass('hidden')
+})

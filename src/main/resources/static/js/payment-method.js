@@ -13,7 +13,6 @@ function paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOu
     const payOutContainer = $(".bank-info-container-2 .bank-container-2");
     const amountFields = $(".transaction-detail-container .transaction-detail")
 
-    const walletFee = 0.05
     let payInHtmls = []
     let payOutHtmls = []
     if (payInMethod && typeof payInMethod === 'object') {
@@ -66,8 +65,7 @@ function paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOu
 
         const errorHtml = $('.error-html')
         $('.error-html p').empty()
-        const balance = parseFloat(localStorage.getItem("balance"))
-        const validationErrors = getValidationErrors(payInHtmls, payOutHtmls, balance, walletFee)
+        const validationErrors = getValidationErrors(payInHtmls, payOutHtmls)
         if(validationErrors.length !== 0) {
             validationErrors.forEach(err => {
                errorHtml.append(`<p>${err}</p>`)
@@ -75,8 +73,6 @@ function paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOu
            errorHtml.removeClass('hidden')
         }
         else {
-            const newBalance = balance - walletFee
-            localStorage.setItem("balance", JSON.stringify(newBalance))
             const payInDetails = payInHtmls.map(html => {
                 const label = html.label
                 const input = html.input
@@ -162,9 +158,9 @@ function attachPaymentFields(paymentMethod) {
 }
 
 function checkRfqProcessed(exchangeId) {
-    const maxPollCount = 4
+    const maxPollCount = 5
     let pollCount = 0;
-    const intervalTime = 6000; // 6 seconds
+    const intervalTime = 5000; // 4 seconds
 
     const intervalId = setInterval(function() {
 
@@ -213,7 +209,7 @@ function hideRollerAndDisplayError() {
     $('.error-html').removeClass('hidden')
 }
 
-function getValidationErrors(payInHtmls, payOutHtmls, balance, walletFee) {
+function getValidationErrors(payInHtmls, payOutHtmls) {
     const errorMessages = []
 
     payInHtmls.forEach(payInHtml => {
@@ -227,10 +223,6 @@ function getValidationErrors(payInHtmls, payOutHtmls, balance, walletFee) {
             errorMessages.push(`payin ${payOutHtml.label.text()} is required` )
         }
     })
-
-    if(balance < walletFee) {
-        errorMessages.push("Please fund wallet to pay wallet fee for this transaction")
-    }
 
     return errorMessages
 }

@@ -52,19 +52,43 @@ $('#currency-table tbody').on('click', '.view-btn', function() {
 
 });
 
-$('.from-input').on('keydown', function(event) {
+const fromInput = $('#from-input')
+const toInput = $('#to-input')
+
+fromInput.on('keydown', function(event) {
     const fromCurrency = $(this).val()
+    const toCurrency = toInput.val()
+    let filtered
     if (event.key === 'Enter') {
-       searchItems = searchItems.filter(searchItem => searchItem.fromCurrency.toLowerCase() === fromCurrency.toLowerCase())
-        createTable(searchItems)
+        if(fromCurrency.trim() !== '' && toCurrency !== '') {
+            filtered = searchItems.filter(searchItem => searchItem.fromCurrency.toLowerCase() === fromCurrency.toLowerCase()
+            && searchItem.toCurrency.toLowerCase() === toCurrency.toLowerCase())
+            createTable(filtered)
+        } else if(fromCurrency.trim() !== '') {
+            filtered = searchItems.filter(searchItem => searchItem.fromCurrency.toLowerCase() === fromCurrency.toLowerCase())
+            createTable(filtered)
+        } else {
+            createTable(searchItems)
+        }
     }
 });
 
-$('.to-input').on('keydown', function(event) {
+toInput.on('keydown', function(event) {
     const toCurrency = $(this).val()
+    const fromCurrency = fromInput.val()
+    let filtered
     if (event.key === 'Enter') {
-        searchItems = searchItems.filter(searchItem => searchItem.toCurrency.toLowerCase() === toCurrency.toLowerCase())
-        createTable(searchItems)
+        if(toCurrency.trim() !== '' && fromCurrency !== '') {
+            filtered = searchItems.filter(searchItem => searchItem.toCurrency.toLowerCase() === toCurrency.toLowerCase()
+                && searchItem.toCurrency.toLowerCase() === toCurrency.toLowerCase())
+            createTable(filtered)
+        } else if(toCurrency.trim() !== '') {
+            filtered = searchItems.filter(searchItem => searchItem.fromCurrency.toLowerCase() === fromCurrency.toLowerCase())
+            createTable(filtered)
+        } else {
+            createTable(searchItems)
+        }
+
     }
 });
 
