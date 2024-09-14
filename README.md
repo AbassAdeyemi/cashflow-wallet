@@ -16,16 +16,12 @@ The fee collection is achieved through a blockchain integration and using a stab
 Due to the timeline and scope of the project, the actual blockchain integration is not currently
 available in the app but there is a fund wallet button on the dashboard that simulates
 the adding of funds.
-<br>
-<br>
 - **_Optionality:_** The wallet handles matching offerings by allowing users to select
 their choice from a pool of offerings that match their selected currency pair. It further
 empowers them to select the best of the offerings by arranging them in the most
 intuitive order. It sorts the offerings by placing offerings from the highest rated
 pfis with the lowest exchange rate at the top and offerings from the lowest rated pfis
 with the highest exchange rate at the bottom.
-<br>
-<br>
 - **_Customer Management:_** The wallet manages customer's decentralized identifiers by
 encrypting the portable did information in the database. Storing of the portable did
 is important because it is required when importing the bearer did which is used to sign
@@ -37,8 +33,7 @@ to download their portable dids on registration because it would be needed to lo
 when a customer's didUri has been removed from the local storage. The wallet saves the 
 users' verifiable credential in their encrypted jwts and only decrypts the
 jwts only to extract users' profile information.
-<br>
-<br>
+
 - **_Customer Satisfaction:_** The wallet application tracks customer's satisfaction by providing
 a ratings tab where customers can rate a pfi at the end of each transaction. The scoring provided
 by each customer contributes to what culminates in the average rating of each pfi. The
