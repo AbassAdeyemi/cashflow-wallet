@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="stylesheet" href="/cashflow/css/style.css" />
+    <link rel="stylesheet" href="/cashflow/webjars/font-awesome/6.5.2/css/all.css">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,25 +19,24 @@
     <div id="login-container">
         <form class="but" id="upload-form" enctype="multipart/form-data">
             <input type="file" id="file-input" name="file"/>
-            <button id="loginButton" type="submit">Import Key</button>
+            <button id="loginButton" type="submit">Import keys</button>
         </form>
         <div class="generate-key">
-            <span>Don't yet have a key? <a href="" id="openOverlay">Register</a></span>
+            <span>Don't have a portable did yet? <a href="" id="openOverlay">Register</a></span>
         </div>
 
     </div>
     <div id="overlay" class="overlay">
         <div class="overlay-content">
             <span id="closeOverlay" class="close">&times;</span>
-            <button class="generate">Generate Key</button>
-            <!-- <button class="download">Download Key</button> -->
-            <!-- <span>Note: You need to generate your key first, then download.</span> -->
+            <button class="generate">Generate Keys</button>
+            <div class="roller"></div>
             <p class="result"></p>
         </div>
     </div>
 </div>
-<script src="/webjars/jquery/3.7.1/jquery.js"></script>
-<script src="/js/import.js"></script>
-<script src="/js/script.js"></script>
+<script src="/cashflow/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/cashflow/js/import.js"></script>
+<script src="/cashflow/js/script.js"></script>
 </body>
 </html>

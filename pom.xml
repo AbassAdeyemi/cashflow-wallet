@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.hayba</groupId>
-    <artifactId>wallet-app</artifactId>
+    <artifactId>cashflow-wallet</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>wallet-app</name>
-    <description>wallet-app</description>
+    <name>cashflow-wallet</name>
+    <description>A tbdex wallet implementation</description>
     <properties>
         <java.version>17</java.version>
         <kotlin.version>1.9.25</kotlin.version>

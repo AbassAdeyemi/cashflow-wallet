@@ -287,6 +287,66 @@ cursor: pointer;
     padding: 16px;
 }
 
+.funding-detail{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    padding: 4rem 2rem 2.3rem 2rem;
+    background: var(--color-primary-variant);
+    height: 10vh;
+    width: 100%;
+}
+
+.address-copy{
+    display: flex;
+    /* gap: 1rem; */
+    align-items: center;
+    align-content: center;
+}
+
+.address-copy p{
+    color: black;
+    font-size: 0.8em;
+}
+
+.address-copy i{
+    font-size: 0.8em;
+    color: #000;
+}
+
+.address-copy button{
+    background: none;
+    width: 0%;
+}
+
+.fund-btn{
+    width: 7%;
+    height: 7vh;
+    background: var(--color-secondary-variant-1);
+    font-size: 0.8em;
+    padding: 1rem;
+    border-radius: 0.3rem;
+}
+
+.fund-btn:hover{
+    background: var(--color-secondary-variant-1-deep);
+}
+
+#close-icon{
+    position: absolute;
+    top: 0%;
+    left: 97%;
+    padding: 0.5rem 0 0.5rem 0;
+    font-size: 1.2em;
+}
+
 .header {
     color: var(--color-text);
     background: var(--color-secondary);
@@ -350,7 +410,7 @@ cursor: pointer;
     font-weight: bolder;
 }
 
-.balance span {
+.balance h5 {
     text-align: center;
     font-size: 1.5em;
 }
@@ -403,7 +463,7 @@ cursor: pointer;
 
 .userKyc{
     background: var(--color-primary);
-    width: 23%;
+    width: 26%;
     margin: 0 auto;
     font-size: 0.8em;
     padding: 1rem;
@@ -475,7 +535,7 @@ cursor: pointer;
     margin-bottom: 1rem;
     border-radius: 0.5rem;
     /* height: 375%; */
-    height: 29vh;
+    height: 33vh;
     overflow: hidden;
 }
 
@@ -525,7 +585,7 @@ th,
 td {
     padding: 8px;
     /* padding: 4px 2px 4px 2px; */
-    text-align: left;
+    text-align: center;
     font-size: 0.8rem;
 }
 
@@ -564,7 +624,7 @@ th {
     top: 50%;
     left: 50%;
     margin-top: -25px;
-    margin-left: -25px;
+    /*margin-left: -25px;*/
 }
 
 @keyframes spin {
@@ -904,6 +964,13 @@ form{
     flex-direction: column;
 }
 
+.transaction-detail-container p{
+    color: var(--color-text);
+    padding: 0 1rem 1rem 1rem;
+    font-size: 0.5em;
+    color: rgb(221, 221, 221);
+}
+
 .currency-input{
     width: 15%;
     border-radius: 0.3rem;
@@ -988,6 +1055,11 @@ form{
 
 .quote-link p a:hover {
     background: var(--color-primary-variant);
+}
+
+.quote-content {
+    font-weight: bold;
+    font-size: 1em;
 }
 
 .existing-body{
@@ -1098,6 +1170,60 @@ form{
     border-radius: 0.3rem;
 }
 
+.error-html{
+    /*display: none;*/
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    padding: 1rem;
+    background: var(--color-primary-variant);
+    height: 7vh;
+    width: 100%;
+}
+
+.error-html p{
+    text-align: center;
+    margin: 0 auto;
+    color: #f44336;
+    font-size: 0.8em;
+}
+
+.error-html i{
+    position: absolute;
+    top: 0;
+    left: 97%;
+    padding: 0.5rem;
+    color: var(--color-secondary-variant-1-deep);
+}
+
+.log-out{
+    font-size: 0.8em;
+    width: 6%;
+    height: 6vh;
+    position: absolute;
+    bottom: 5%;
+    left: 8%;
+    background: var(--color-secondary-variant-1);
+    border-radius: 0.3rem;
+}
+
+.log-out:hover{
+    background: var(--color-secondary-variant-1-deep);
+    transition: all 0.5s ease;
+}
+
+.proceed {
+    width: 20%;
+    margin:0 auto;
+}
+.cancel {
+    width: 20%;
+    margin:0 auto;
+}
+
 @media (max-width: 1024px) {
     #loginButton{
         width: 85%;
@@ -1186,8 +1312,4 @@ form{
     .existing a{
         padding: 0.15rem 0.3rem;
     }
-
-    /* .prev-partners table {
-      width: 100%;
-    } */
 }

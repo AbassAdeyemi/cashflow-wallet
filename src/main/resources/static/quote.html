@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="stylesheet" href="/cashflow/css/style.css" />
+    <link rel="stylesheet" href="/cashflow/webjars/font-awesome/6.5.2/css/all.css">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,13 +19,13 @@
         <div class="logo">Logo</div>
         <ul class="main-menu">
             <li class="active">
-                <a href="dashboard">
+                <a href="/cashflow/dashboard">
                     <i class="fa-solid fa-gauge"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="quote">
+                <a href="/cashflow/quote">
                     <i class="fa-solid fa-circle-info"></i>
                     <span>Existing Quote</span>
                 </a>
@@ -34,9 +34,13 @@
         </ul>
     </div>
     <div class="content">
+        <div class="error-html hidden" >
+            <p>This is the error from the Backend</p>
+            <i id="error-cancel" class="fa-solid fa-xmark"></i>
+        </div>
         <div class="quote-body">
             <div class="quote-container hidden">
-                <h3>Quote</h3>
+                <h3>Latest Quote</h3>
                 <div class="quote">
 
 
@@ -55,7 +59,6 @@
                         <th>Pay-in Currency</th>
                         <th>Pay-out Amount</th>
                         <th>Pay-out Currency</th>
-                        <!-- <th>Rate</th> -->
                         <th>Expiration</th>
                         <th>Status</th>
                         <th>Trade</th>
@@ -63,9 +66,6 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <!-- <td>200</td>
-                        <td>GHS</td>
-                        <td>2 Days</td> -->
                     </tr>
                     </tbody>
                 </table>
@@ -76,8 +76,8 @@
         </div>
     </div>
 </div>
-<script src="/webjars/jquery/3.7.1/jquery.js"></script>
-<script src="/js/quote.js"></script>
-<script src="/js/script.js"></script>
+<script src="/cashflow/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/cashflow/js/quote.js"></script>
+<script src="/cashflow/js/script.js"></script>
 </body>
 </html>

@@ -1,40 +1,40 @@
 $(document).ready(function() {
-    const payInMethod = JSON.parse(localStorage.getItem('payInMethod'));
-    const payOutMethod = JSON.parse(localStorage.getItem('payOutMethod'));
+    const payInMethod = getPaymentMethod('payInMethod');
+    const payOutMethod = getPaymentMethod('payOutMethod');
     const rate = localStorage.getItem("rate");
-    const payInMethodKind = localStorage.getItem("payInMethodKind")
-    const payOutMethodKind = localStorage.getItem("payOutMethodKind")
     const payInCurrency = localStorage.getItem("from");
     const payOutCurrency = localStorage.getItem("to");
 
-    paymentMethodBody(payInMethod,
-        payOutMethod, rate,
-        payInCurrency, payOutCurrency,
-        payInMethodKind, payOutMethodKind
-    );
+    paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOutCurrency);
 })
 
-function paymentMethodBody(payInMethod, payOutMethod,
-                           rate, payInCurrency,
-                           payOutCurrency, payInMethodKind,
-                           payOutMethodKind) {
-    var payInContainer = $(".bank-info-container .bank-container");
-    var payOutContainer = $(".bank-info-container-2 .bank-container-2");
-    var conversionFields = $(".transaction-detail-container .transaction-detail")
+function paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOutCurrency) {
+    const payInContainer = $(".bank-info-container .bank-container");
+    const payOutContainer = $(".bank-info-container-2 .bank-container-2");
+    const amountFields = $(".transaction-detail-container .transaction-detail")
 
+    const walletFee = 0.05
     let payInHtmls = []
     let payOutHtmls = []
-    if (payInMethod !== null) {
-        const {div, htmls} = attachPaymentFields(payInMethod)
-        payInHtmls = htmls
+    if (payInMethod && typeof payInMethod === 'object') {
+        payInHtmls = attachPaymentFields(payInMethod)
+        const div = $('<div class="div"></div>');
+        payInHtmls.forEach(payInHtml => {
+            div.append(payInHtml.label)
+            div.append(payInHtml.input)
+        })
         payInContainer.append(div)
     } else {
         $('.bank-info-container').css({'display': 'none'})
     }
 
-    if (payOutMethod !== null) {
-        const {div, htmls} = attachPaymentFields(payOutMethod)
-        payOutHtmls = htmls
+    if (payOutMethod && typeof payOutMethod === 'object') {
+        payOutHtmls = attachPaymentFields(payOutMethod)
+        const div = $('<div class="div"></div>');
+        payOutHtmls.forEach(payOutHtml => {
+            div.append(payOutHtml.label)
+            div.append(payOutHtml.input)
+        })
         payOutContainer.append(div)
     } else {
         $(".bank-info-container-2").css({'display': 'none'})
@@ -42,12 +42,12 @@ function paymentMethodBody(payInMethod, payOutMethod,
 
     const div = $('<div class="div"></div>');
     div.append('<label class="lab">You send: </label>')
-    const sendInput = $(`<input class="currency-input send-input" placeholder="${payInCurrency}">`)
+    const sendInput = $(`<input class="currency-input send-input" type="number" placeholder="${payInCurrency}" required>`)
     div.append(sendInput)
     div.append('<label class="lab">You receive: </label>')
     const receiveInput = $(`<input class="currency-input" placeholder="${payOutCurrency}">`)
     div.append(receiveInput)
-    conversionFields.append(div)
+    amountFields.append(div)
 
     sendInput.on('input', function() {
         let amount = parseFloat(sendInput.val());
@@ -62,38 +62,54 @@ function paymentMethodBody(payInMethod, payOutMethod,
 
 
 
-    $('.request-btn').on('click', function() {
+    $('.request-btn').on('click', function(e) {
 
-        const payInDetails = payInHtmls.map(html => {
-            const label = html.label
-            const input = html.input
-            return {
-                fieldName: label.text(),
-                fieldValue: input.val
-            }
-        })
-
-        const payOutDetails = payOutHtmls.map(html => {
-            const label = html.label
-            const input = html.input
-            return {
-                fieldName: label.text(),
-                fieldValue: input.val()
-            }
-        })
-
-                payIn = {
-                    paymentMethodKind: payInMethod == null? payInMethodKind : payInMethod.kind,
-                    paymentMethodValues: []
+        const errorHtml = $('.error-html')
+        $('.error-html p').empty()
+        const balance = parseFloat(localStorage.getItem("balance"))
+        const validationErrors = getValidationErrors(payInHtmls, payOutHtmls, balance, walletFee)
+        if(validationErrors.length !== 0) {
+            validationErrors.forEach(err => {
+               errorHtml.append(`<p>${err}</p>`)
+            })
+           errorHtml.removeClass('hidden')
+        }
+        else {
+            const newBalance = balance - walletFee
+            localStorage.setItem("balance", JSON.stringify(newBalance))
+            const payInDetails = payInHtmls.map(html => {
+                const label = html.label
+                const input = html.input
+                return {
+                    fieldName: label.text(),
+                    fieldValue: input.val()
                 }
+            })
 
-                payOut = {
-                    paymentMethodKind: payOutMethod == null? payOutMethodKind : payOutMethod.kind,
-                    paymentMethodValues: []
+            const payOutDetails = payOutHtmls.map(html => {
+                const label = html.label
+                const input = html.input
+                return {
+                    fieldName: label.text(),
+                    fieldValue: input.val()
                 }
+            })
 
-                payInDetails.forEach(payInDetail => payIn.paymentMethodValues.push(payInDetail))
-                payOutDetails.forEach(payOutDetail => payOut.paymentMethodValues.push(payOutDetail))
+            const payInMethodKind = typeof payInMethod === 'string'? payInMethod : payInMethod.kind
+            const payOutMethodKind = typeof  payOutMethod === 'string'? payOutMethod : payOutMethod.kind
+
+            const payIn = {
+                paymentMethodKind: payInMethodKind,
+                paymentMethodValues: []
+            }
+
+            const payOut = {
+                paymentMethodKind: payOutMethodKind,
+                paymentMethodValues: []
+            }
+
+            payInDetails.forEach(payInDetail => payIn.paymentMethodValues.push(payInDetail))
+            payOutDetails.forEach(payOutDetail => payOut.paymentMethodValues.push(payOutDetail))
 
             const offeringRef = localStorage.getItem("offeringRef");
             const customerDID = localStorage.getItem("didUri");
@@ -106,9 +122,11 @@ function paymentMethodBody(payInMethod, payOutMethod,
                 amount: sendInput.val()
             };
 
+            console.log(data)
+
 
             $.ajax({
-                url: 'http://localhost:8082/exchanges/rfqs',
+                url: baseUrl + '/exchanges/rfqs',
                 type: 'POST',
                 data: JSON.stringify(data),
                 contentType: 'application/json',
@@ -123,14 +141,12 @@ function paymentMethodBody(payInMethod, payOutMethod,
                     console.log('Submission failed:');
                 }
             });
-
+        }
         });
 
 }
 
-
 function attachPaymentFields(paymentMethod) {
-
     const htmls = []
     const div = $('<div class="div"></div>');
     for (const field of paymentMethod.paymentFields) {
@@ -142,24 +158,24 @@ function attachPaymentFields(paymentMethod) {
         htmls.push(html)
     }
 
-    return {div, htmls}
+    return htmls
 }
 
 function checkRfqProcessed(exchangeId) {
     const maxPollCount = 4
     let pollCount = 0;
-    const intervalTime = 4000; // 4 seconds
+    const intervalTime = 6000; // 6 seconds
 
     const intervalId = setInterval(function() {
 
             $.ajax({
-                url: `http://localhost:8082/exchanges/rfqs/${exchangeId}/is-processed`,
+                url: `${baseUrl}/exchanges/rfqs/${exchangeId}/is-processed`,
                 method: 'GET'
             })
                 .done(function (response) {
                     if (response === true) {
                         clearInterval(intervalId);
-                        window.location.href = "../quote"
+                        window.location.href = "/cashflow/quote"
                     }
                 })
                 .fail(function (xhr, status, error) {
@@ -169,9 +185,56 @@ function checkRfqProcessed(exchangeId) {
                     if (pollCount >= maxPollCount) {
                         console.log('Max poll count reached. Stopping.');
                         clearInterval(intervalId);
+                        hideRollerAndDisplayError()
                     }
                 });
             pollCount++;
     }, intervalTime);
 }
 
+function getPaymentMethod(key) {
+    const paymentMethod = localStorage.getItem(key);
+    try {
+        const parsedPaymentMethod = JSON.parse(paymentMethod);
+
+        if (parsedPaymentMethod && typeof parsedPaymentMethod === 'object') {
+            return parsedPaymentMethod;
+        }
+        return paymentMethod;
+    } catch (e) {
+        return paymentMethod;
+    }
+}
+
+function hideRollerAndDisplayError() {
+    $('#rollerOverlay').css('display', 'none');
+    $('.roller').hide()
+    $('.error-html p').text('Error occurred. Could not request for quote')
+    $('.error-html').removeClass('hidden')
+}
+
+function getValidationErrors(payInHtmls, payOutHtmls, balance, walletFee) {
+    const errorMessages = []
+
+    payInHtmls.forEach(payInHtml => {
+        if(payInHtml.input.attr('required') && payInHtml.input.val().trim() === "") {
+            errorMessages.push(`payin ${payInHtml.label.text()} is required` )
+        }
+    })
+
+    payOutHtmls.forEach(payOutHtml => {
+        if(payOutHtml.input.attr('required') && payOutHtml.input.val().trim() === "") {
+            errorMessages.push(`payin ${payOutHtml.label.text()} is required` )
+        }
+    })
+
+    if(balance < walletFee) {
+        errorMessages.push("Please fund wallet to pay wallet fee for this transaction")
+    }
+
+    return errorMessages
+}
+
+$('#error-cancel').on('click', () => {
+    $('.error-html').addClass('hidden')
+})

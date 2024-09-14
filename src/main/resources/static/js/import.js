@@ -3,7 +3,7 @@ $(document).ready(function() {
     handleKeyGeneration();
     const didUri = localStorage.getItem("didUri")
     if(didUri) {
-        window.location.href='../dashboard'
+        window.location.href='/cashflow/dashboard'
     }
 });
 
@@ -31,7 +31,7 @@ function handleDIDUpload() {
                 console.log(response.didUri);
                 const didUri = response.didUri
                 localStorage.setItem("didUri", didUri);
-                window.location.href = '../dashboard'
+                window.location.href = '/cashflow/dashboard'
 
             },
             error: function() {
@@ -45,12 +45,13 @@ function handleDIDUpload() {
 
 function handleKeyGeneration() {
     $('.generate').on('click', function() {
+        $('.roller').show();
         $.ajax({
             url: `${baseUrl}/users/register`,
             method: 'POST',
             contentType: 'application/json',
             success: function(data) {
-                window.location.href = '../dashboard'
+                window.location.href = '/cashflow/dashboard'
                 localStorage.setItem('didUri', (data.didUri))
             },
         });

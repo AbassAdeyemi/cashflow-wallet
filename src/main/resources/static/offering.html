@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="stylesheet" href="/cashflow/css/style.css" />
+    <link rel="stylesheet" href="/cashflow/webjars/font-awesome/6.5.2/css/all.css">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,13 +19,13 @@
         <div class="logo">Logo</div>
         <ul class="main-menu">
             <li class="active">
-                <a href="dashboard">
+                <a href="/cashflow/dashboard">
                     <i class="fa-solid fa-gauge"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="quote">
+                <a href="/cashflow/quote">
                     <i class="fa-solid fa-circle-info"></i>
                     <span>Existing Quote</span>
                 </a>
@@ -34,6 +34,9 @@
         </ul>
     </div>
     <div class="content">
+        <div class="error-html hidden" >
+            <i id="error-cancel" class="fa-solid fa-xmark"></i>
+        </div>
         <div class="matching-offering-body">
             <div class="matching-offering">
                 <h3>Matching Offerings</h3>
@@ -73,9 +76,9 @@
 </div>
 
 
-<script src="/webjars/jquery/3.7.1/jquery.js"></script>
-<script src="/js/offering.js"></script>
-<script src="/js/script.js"></script>
+<script src="/cashflow/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/cashflow/js/offering.js"></script>
+<script src="/cashflow/js/script.js"></script>
 <script>
 </script>
 </body>

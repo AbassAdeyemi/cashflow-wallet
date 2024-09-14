@@ -26,17 +26,18 @@ function displayLatestQuote(quote) {
     $('.quote-container').removeClass('hidden')
     const pTags = []
     console.log(quote)
-    pTags.push($('<p></p>').text('Amount To Pay:' + quote.payin.amount));
-    pTags.push($('<p></p>').text('Fee:' + quote.payin.fee))
-    pTags.push($('<p></p>').text('Your Currency:' + quote.payin.currencyCode))
-    pTags.push($('<p></p>').text('Amount To Receive:' + quote.payout.amount))
-    pTags.push($('<p></p>').text('Pfi Currency:' + quote.payout.currencyCode))
+    pTags.push($('<p class="quote-content"></p>').text('Pfi Name: ' + quote.pfiName));
+    pTags.push($('<p class="quote-content"></p>').text('Amount To Pay: ' + quote.payin.amount));
+    pTags.push($('<p class="quote-content"></p>').text('Fee: ' + quote.payin.fee))
+    pTags.push($('<p class="quote-content"></p>').text('Your Currency: ' + quote.payin.currencyCode))
+    pTags.push($('<p class="quote-content"></p>').text('Amount To Receive: ' + quote.payout.amount))
+    pTags.push($('<p class="quote-content"></p>').text('Pfi Currency: ' + quote.payout.currencyCode))
     if(quote.payin.paymentInstruction) {
         if(quote.payin.paymentInstruction?.link) {
-            pTags.push($('<p></p>').text('Payment Link:' + quote.payin.paymentInstruction.link))
+            pTags.push($('<p class="quote-content"></p>').text('Payment Link: ' + quote.payin.paymentInstruction.link))
         }
         if(quote.payin.paymentInstruction?.instruction) {
-            pTags.push($('<p></p>').text('Payment Instruction:' + quote.payin.paymentInstruction.instruction))
+            pTags.push($('<p class="quote-content"></p>').text('Payment Instruction: ' + quote.payin.paymentInstruction.instruction))
         }
     }
 
@@ -120,7 +121,7 @@ quoteLink.on('click', '.proceed', function (){
     }
 
     $.ajax({
-        url: 'http://localhost:8082/exchanges/quotes',
+        url: baseUrl + '/exchanges/quotes',
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
@@ -141,12 +142,12 @@ quoteLink.on('click', '.cancel', function (){
     }
 
     $.ajax({
-        url: 'http://localhost:8082/exchanges/quotes',
+        url: baseUrl + '/exchanges/quotes',
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
         success: function() {
-           window.location.href = '../dashboard'
+           window.location.href = '/cashflow//dashboard'
         },
         error: function() {
             console.log('Submission failed:');
@@ -157,14 +158,14 @@ quoteLink.on('click', '.cancel', function (){
 
 
 function checkOrderCompleted(customerDID) {
-    const maxPollCount = 4
+    const maxPollCount = 6
     let pollCount = 0;
-    const intervalTime = 4000; // 4 seconds
+    const intervalTime = 6000; // 6 seconds
 
     const intervalId = setInterval(function() {
 
             $.ajax({
-                url: `http://localhost:8082/exchanges/quotes/${customerDID}`,
+                url: `${baseUrl}/exchanges/quotes/${customerDID}`,
                 method: 'GET'
             })
                 .done(function (response) {
@@ -172,7 +173,7 @@ function checkOrderCompleted(customerDID) {
                     if (isOrderCompleted(response, exchangeId)) {
                         console.log("Order Completed !!!")
                         clearInterval(intervalId);
-                        window.location.href = "../rating"
+                        window.location.href = "/cashflow/rating"
                     }
                 })
                 .fail(function (xhr, status, error) {
@@ -182,6 +183,7 @@ function checkOrderCompleted(customerDID) {
                     if (pollCount >= maxPollCount) {
                         console.log('Max poll count reached. Stopping.');
                         clearInterval(intervalId);
+                        hideRollerAndDisplayError()
                     }
                 });
             pollCount++;
@@ -190,4 +192,15 @@ function checkOrderCompleted(customerDID) {
 
 const isOrderCompleted = (items, exchangeId) => {
     return !items.some(item => item.exchangeId === exchangeId)
+}
+
+function hideRollerAndDisplayError() {
+    $('#rollerOverlay').css('display', 'none');
+    $('.roller').hide()
+    $('.error-html p').text('Error occurred. Could not process quote')
+    $('.error-html').removeClass('hidden')
+    $('#error-cancel').on('click', () => {
+        $('.error-html').addClass('hidden')
+    })
+
 }

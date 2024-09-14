@@ -13,12 +13,13 @@ $(document).ready(function () {
 function getAvailablePairs(fromCurrency, toCurrency) {
     const fromParam = fromCurrency;
     const toParam = toCurrency;
-    const url = `http://localhost:8082/offerings/match?fromCurrency=${fromParam}&toCurrency=${toParam}`
+    const url = `${baseUrl}/offerings/match?fromCurrency=${fromParam}&toCurrency=${toParam}`
 
     $.ajax({
         url: url,
         type: 'GET',
         success: function (data) {
+            console.log(data)
             matchingOffer(data);
 
         }
@@ -44,7 +45,13 @@ function matchingOffer(items) {
 
         // console.log(offering.payInMethods);
 
-        const button = $(`<button class="match-btn" data-rate='${(offering.rate)}' data-payin='${JSON.stringify(offering.payInMethods)}' data-payout='${JSON.stringify(offering.payOutMethods)}'>Trade</button>`);
+        const button = $(`<button class="match-btn" data-rate='${(offering.rate)}' 
+                    data-payin='${JSON.stringify(offering.payInMethods)}' 
+                    data-payout='${JSON.stringify(offering.payOutMethods)}'
+                    data-payout='${JSON.stringify(offering.payOutMethods)}'
+                    data-ref="${offering.ref}"
+                    data-pfiDID="${offering.pfiDID}"
+                    >Trade</button>`);
         const buttonCell = $('<td></td>');
         buttonCell.append(button);
         row.append(buttonCell);
@@ -53,30 +60,33 @@ function matchingOffer(items) {
 
 
         matchBody.append(row);
-        localStorage.setItem('offeringRef', offering.ref);
-
-
     }
     $('.match-btn').on('click', function() {
         const didUri = localStorage.getItem("didUri");
-        const offeringRef = localStorage.getItem("offeringRef");
+        const offeringRef = $(this).data('ref')
+        const pfiDID = $(this).data('pfidid')
+        const rate = $(this).data('rate');
+
+        localStorage.setItem("offeringRef", offeringRef);
+        localStorage.setItem("pfiDID", pfiDID);
+        localStorage.setItem("rate", rate);
 
         const payInMethods = JSON.parse($(this).attr('data-payin'));
         const payOutMethods = JSON.parse($(this).attr('data-payout'));
-        const rate = $(this).data('rate');
+
 
         $.ajax({
-            url: `http://localhost:8082/offerings/has-credential?didUri=${didUri}&offeringRef=${offeringRef}`,
+            url: `${baseUrl}/offerings/has-credential?didUri=${didUri}&offeringRef=${offeringRef}`,
             type: 'GET',
             success: function(response) {
 
                 const resultContainer = $("#resultContainer");
                 if (response === true) {
-                    passPaymentMethod(payInMethods, payOutMethods, rate)
-                    window.location.href = "../payment.html";
+                    passPaymentMethod(payInMethods, payOutMethods)
+                    window.location.href = "/cashflow/payment";
                 } else {
                     resultContainer.removeClass('hidden');
-                    obtainKcc(payInMethods, payOutMethods, rate)
+                    obtainKcc(payInMethods, payOutMethods)
                 }
 
             },
@@ -104,36 +114,44 @@ function obtainKcc(payInMethods, payOutMethods, rate) {
             customerDID: did
         }
 
-        $.ajax({
-            url: 'http://localhost:8082/users/credentials',
-            type: 'POST',
-            data: JSON.stringify(formData),
-            contentType: 'application/json',
-            success: function () {
-                passPaymentMethod(payInMethods, payOutMethods, rate)
-                window.location.href = "../payment.html"
-            },
-            error: function () {
-                console.error("not successful");
+        const errorHtml = $('.error-html')
+        $('.error-html p').empty()
+       const validationErrors = getValidationErrors(formData)
+        if(validationErrors.length !== 0) {
+            validationErrors.forEach(err => {
+                errorHtml.append(`<p>${err}</p>`)
+            })
+            errorHtml.removeClass('hidden')
+        } else {
+            $.ajax({
+                url: baseUrl + '/users/credentials',
+                type: 'POST',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function () {
+                    passPaymentMethod(payInMethods, payOutMethods, rate)
+                    window.location.href = "/cashflow/payment"
+                },
+                error: function () {
+                    console.error("not successful");
 
-            }
-        })
-
+                }
+            })
+        }
     })
 }
 
-function passPaymentMethod(payInMethods, payOutMethods, rate) {
-    if(paymentMethodSatisfiesCheck(payInMethods[0])) {
+function passPaymentMethod(payInMethods, payOutMethods) {
+    if(paymentMethodSatisfiesCheck(payInMethods)) {
         localStorage.setItem("payInMethod", JSON.stringify(payInMethods[0]))
     } else {
-        localStorage.setItem("payInMethodKind", payInMethods[0].kind)
+        localStorage.setItem("payInMethod", payInMethods[0].kind)
     }
     if(paymentMethodSatisfiesCheck(payOutMethods)) {
         localStorage.setItem("payOutMethod", JSON.stringify(payOutMethods[0]))
     } else {
-        localStorage.setItem("payOutMethodKind", payOutMethods[0].kind)
+        localStorage.setItem("payOutMethod", payOutMethods[0].kind)
     }
-    localStorage.setItem("rate", rate)
 }
 
 const paymentMethodSatisfiesCheck = (paymentMethods) => {
@@ -148,17 +166,33 @@ function generateStars(rating) {
     let starsHtml = '';
 
     for (let i = 0; i < fullStars; i++) {
-        starsHtml += '<span class="star">&#9733;</span>';
+        // starsHtml += '<td class="star">&#9733;</td>';
+        starsHtml += '<span class="star"><i class="fas fa-star"></i></span>';
 
     }
 
     if (halfStar) {
-        starsHtml += '<span class="star">&#9733;</span>';
+        starsHtml += '<span class="star"><i class="fas fa-star-half-alt" id=""></i></span>';
     }
 
     for (let j = 0; j < emptyStars; j++) {
-        starsHtml += '<span class="star">&#9734;</span>';
+        starsHtml += '<span class="star"><i class="fa-regular fa-star"/></i></span>';
     }
 
     return starsHtml;
 }
+
+function getValidationErrors(formData) {
+    const errorMessages = []
+    if(formData.customerName.trim() === "") {
+        errorMessages.push("customerName is required")
+    }
+    if(formData.countryCode.trim() === "") {
+        errorMessages.push("countryCode is required")
+    }
+    return errorMessages
+}
+
+$('#error-cancel').on('click', () => {
+    $('.error-html').addClass('hidden')
+})

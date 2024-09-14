@@ -34,7 +34,7 @@ $(document).ready(function () {
         } else {
 
             $.ajax({
-                url: 'http://localhost:8082/ratings',
+                url: baseUrl + '/ratings',
                 type: 'POST',
                 data: JSON.stringify(data),
                 contentType: 'application/json',
@@ -42,7 +42,7 @@ $(document).ready(function () {
                     setTimeout(() => {
                         alert("Rating submitted successfully!");
                     }, 6000)
-                    window.location.href = "../dashboard"
+                    window.location.href = "/cashflow/dashboard"
                 }
             });
         }

@@ -4,8 +4,8 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css"/>
-    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="stylesheet" href="/cashflow/css/style.css"/>
+    <link rel="stylesheet" href="/cashflow/webjars/font-awesome/6.5.2/css/all.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link
@@ -19,13 +19,13 @@
         <div class="logo">Logo</div>
         <ul class="main-menu">
             <li class="active">
-                <a href="dashboard">
+                <a href="/cashflow/dashboard">
                     <i class="fa-solid fa-gauge"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="quote">
+                <a href="/cashflow/quote">
                     <i class="fa-solid fa-circle-info"></i>
                     <span>Existing Quote</span>
                 </a>
@@ -36,11 +36,8 @@
     <div class="content">
         <div id="trade" class="currencies-body">
             <div class="search">
-                <input
-                        type="text"
-                        placeholder="Select currency pair.."
-                        class="search-input"
-                />
+                <input type="text" placeholder="search by to currency" class="search-input to-input"/>
+                <input type="text" placeholder="search by from currency" class="search-input from-input">
             </div>
             <div class="currency">
                 <table id="currency-table">
@@ -57,19 +54,13 @@
                     </tr>
                     </tbody>
                 </table>
-                <button id="see-more">More Currencies</button>
             </div>
 
-            <!-- Matching Peers -->
-<!--            <div class="match">-->
-<!--                <h3>Matching Pairs</h3>-->
-<!--                <p>No matching pair at the moment</p>-->
-<!--            </div>-->
         </div>
     </div>
 </div>
-<script src="/webjars/jquery/3.7.1/jquery.js"></script>
-<script src="/js/currency-pair.js"></script>
-<script src="/js/script.js"></script>
+<script src="/cashflow/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/cashflow/js/currency-pair.js"></script>
+<script src="/cashflow/js/script.js"></script>
 </body>
 </html>

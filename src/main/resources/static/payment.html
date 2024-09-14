@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.css">
+    <link rel="stylesheet" href="/cashflow/css/style.css" />
+    <link rel="stylesheet" href="/cashflow/webjars/font-awesome/6.5.2/css/all.css">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,13 +18,13 @@
         <div class="logo">Logo</div>
         <ul class="main-menu">
             <li class="active">
-                <a href="dashboard">
+                <a href="/cashflow/dashboard">
                     <i class="fa-solid fa-gauge"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="quote">
+                <a href="/cashflow/quote">
                     <i class="fa-solid fa-circle-info"></i>
                     <span>Existing Quote</span>
                 </a>
@@ -33,6 +33,9 @@
         </ul>
     </div>
     <div class="content">
+        <div class="error-html hidden" >
+            <i id="error-cancel" class="fa-solid fa-xmark"></i>
+        </div>
         <div class="payment-body">
             <div class="payment-container">
                 <h3>Payment Method</h3>
@@ -47,7 +50,7 @@
                 <div class="transaction-detail-container">
                     <h4>Enter Transaction Details</h4>
                     <div class="transaction-detail"></div>
-
+                    <p>Transaction fee: 0.05$</p>
                 </div>
                 <div class="request">
                     <button class="request-btn">Request Quote</button>
@@ -60,8 +63,8 @@
     </div>
 
 </div>
-<script src="/webjars/jquery/3.7.1/jquery.js"></script>
-<script src="/js/payment-method.js"></script>
-<script src="/js/script.js"></script>
+<script src="/cashflow/webjars/jquery/3.7.1/jquery.js"></script>
+<script src="/cashflow/js/payment-method.js"></script>
+<script src="/cashflow/js/script.js"></script>
 </body>
 </html>

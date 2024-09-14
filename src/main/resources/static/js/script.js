@@ -1,30 +1,4 @@
-const baseUrl = "http://localhost:8082";
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const links = document.querySelectorAll('a');
-//     const pages = document.querySelectorAll('.content .main-body');
-//
-//     function showPage(pageId) {
-//         pages.forEach(page => {
-//             if (page.id === pageId) {
-//                 page.classList.add('show');
-//             } else {
-//                 page.classList.remove('show');
-//             }
-//         });
-//     }
-//
-//     links.forEach(link => {
-//         link.addEventListener('click', (e) => {
-//             e.preventDefault();
-//             const pageId = link.getAttribute('data-page');
-//             showPage(pageId);
-//         });
-//     });
-//
-//     showPage('dashboard');
-// });
-
+const baseUrl = "http://localhost:8082/cashflow";
 
 const didUri = localStorage.getItem("didUri");
 const downloadUrl =`${baseUrl}/users/${didUri}/download`;
@@ -46,7 +20,7 @@ async function downloadFile(data) {
 
     const blob = new Blob([data], { type: 'text/plain' });
 
-    // This part is to to check if the browser actually supports this file system access Api
+    // This part is to to check if the browser actually supports this file system access api
     if (window.showSaveFilePicker) {
         try {
             const handle = await window.showSaveFilePicker({
@@ -66,10 +40,10 @@ async function downloadFile(data) {
             await writableStream.close();
 
             console.log('File saved successfully!');
-            window.location.href = "../dashboard.html"
+            window.location.href = "/cashflow/dashboard"
         } catch (err) {
             console.error('Error saving file:', err);
-            window.location.href = "../dashboard.html"
+            window.location.href = "/cashflow/dashboard"
         }
     } else {
         console.log('This API is not supported in this browser.');

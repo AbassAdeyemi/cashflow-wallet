@@ -10,12 +10,12 @@ services:
       - mongo-data:/data/db
 
   wallet-app:
-    image: abassadey/wallet-app
-    container_name: wallet-app
+    image: abassadey/cashfow-wallet
+    container_name: cashflow-wallet
     ports:
       - "8082:8082"
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/wallet
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/cashflow
     depends_on:
       - mongodb
 
