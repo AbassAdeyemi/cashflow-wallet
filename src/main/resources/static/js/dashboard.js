@@ -3,7 +3,7 @@ $(document).ready(function() {
     const didUri = localStorage.getItem('didUri');
     const balance = localStorage.getItem("balance");
     if(!balance){
-        localStorage.setItem("balance", "0.0")
+        localStorage.setItem("balance", "0")
         const balance = parseFloat(localStorage.getItem("balance"))
         setBalance(balance)
     } else {
@@ -55,7 +55,7 @@ $('.fund-btn').on('click', function() {
 function setBalance(balance) {
     const dollarAmount = $('.dollar-amount')
     dollarAmount.text(balance);
-    localStorage.setItem("balance", balance)
+    localStorage.setItem("balance", balance.toFixed(2))
 }
 
 // ***close***
@@ -87,6 +87,8 @@ function appendHistory(orders) {
 
 $('.log-out').on('click', function () {
     localStorage.removeItem("didUri");
-    window.location.href = '/cashflow/import'
+    localStorage.setItem("balance", "0")
+    console.log(localStorage.getItem("balance"))
+   window.location.href = '/cashflow/import'
 });
 

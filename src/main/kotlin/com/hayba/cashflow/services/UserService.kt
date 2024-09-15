@@ -93,7 +93,7 @@ class UserService(
             portableDID = response
         } catch (e: Exception) {
             log.error("Error occurred while reading file: {}", e.message)
-            throw InvalidFileException("File is invalid, Please, upload a valid portable did file")
+            throw InvalidFileException("File is invalid. Please, upload a valid portable did file")
         }
         val optionalDid = userDIDRepository.findByDidUri(didUri = portableDID.uri)
         if (optionalDid.isPresent) {

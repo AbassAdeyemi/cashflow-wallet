@@ -1,4 +1,4 @@
-name: 'wallet-application'
+name: 'cashflow-wallet-application'
 services:
   mongodb:
     image: mongo:6.0
@@ -10,7 +10,7 @@ services:
       - mongo-data:/data/db
 
   wallet-app:
-    image: abassadey/cashfow-wallet
+    image: abassadey/cashflow-wallet
     container_name: cashflow-wallet
     ports:
       - "8082:8082"

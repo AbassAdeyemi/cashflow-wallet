@@ -11,8 +11,8 @@ function handleDIDUpload() {
     $('#upload-form').on('submit', function(e) {
         e.preventDefault();
 
-        var formData = new FormData();
-        var fileInput = $('#file-input')[0].files[0];
+        const formData = new FormData();
+        const fileInput = $('#file-input')[0].files[0];
 
         if (!fileInput) {
             alert("Please select a file.");
@@ -34,10 +34,9 @@ function handleDIDUpload() {
                 window.location.href = '/cashflow/dashboard'
 
             },
-            error: function() {
-                // $('#upload-status').html('<p>Failed to upload file: ' + error + '</p>');
-                // console.error('no file chosen');
-
+            error: function(e) {
+                $('.error-html p').text(e.responseJSON.detail)
+                $('.error-html').removeClass('hidden')
             }
         });
     });
@@ -57,3 +56,7 @@ function handleKeyGeneration() {
         });
     });
 }
+
+$('#error-cancel').on('click', () => {
+    $('.error-html').addClass('hidden')
+})

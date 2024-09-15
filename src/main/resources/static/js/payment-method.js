@@ -40,10 +40,10 @@ function paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOu
     }
 
     const div = $('<div class="div"></div>');
-    div.append('<label class="lab">You send: </label>')
+    div.append('<label class="lab">You will send: </label>')
     const sendInput = $(`<input class="currency-input send-input" type="number" placeholder="${payInCurrency}" required>`)
     div.append(sendInput)
-    div.append('<label class="lab">You receive: </label>')
+    div.append('<label class="lab">You will receive: </label>')
     const receiveInput = $(`<input class="currency-input" placeholder="${payOutCurrency}">`)
     div.append(receiveInput)
     amountFields.append(div)
@@ -65,7 +65,7 @@ function paymentMethodBody(payInMethod, payOutMethod, rate, payInCurrency, payOu
 
         const errorHtml = $('.error-html')
         $('.error-html p').empty()
-        const validationErrors = getValidationErrors(payInHtmls, payOutHtmls)
+        const validationErrors = getValidationErrors(payInHtmls, payOutHtmls, sendInput)
         if(validationErrors.length !== 0) {
             validationErrors.forEach(err => {
                errorHtml.append(`<p>${err}</p>`)
@@ -160,7 +160,7 @@ function attachPaymentFields(paymentMethod) {
 function checkRfqProcessed(exchangeId) {
     const maxPollCount = 5
     let pollCount = 0;
-    const intervalTime = 5000; // 4 seconds
+    const intervalTime = 5000; // 5 seconds
 
     const intervalId = setInterval(function() {
 
@@ -209,7 +209,7 @@ function hideRollerAndDisplayError() {
     $('.error-html').removeClass('hidden')
 }
 
-function getValidationErrors(payInHtmls, payOutHtmls) {
+function getValidationErrors(payInHtmls, payOutHtmls, sendInput) {
     const errorMessages = []
 
     payInHtmls.forEach(payInHtml => {
@@ -223,6 +223,10 @@ function getValidationErrors(payInHtmls, payOutHtmls) {
             errorMessages.push(`payin ${payOutHtml.label.text()} is required` )
         }
     })
+
+    if ( sendInput.val().trim() === '' || isNaN(parseFloat(sendInput.val())) || sendInput.val() < 0) {
+        errorMessages.push('Please enter a valid payin amount')
+    }
 
     return errorMessages
 }

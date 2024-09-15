@@ -217,6 +217,8 @@
 .logo {
     height: 80px;
     padding: 16px;
+    font-size: 2.5em;
+    font-weight: 600;
 }
 
 .main-menu {
@@ -1153,7 +1155,6 @@ form{
 .rating-star{
     cursor: pointer;
     font-size: 2rem;
-    cursor: pointer;
     color: lightgray;
     transition: color 0.5s ease-in-out;
 }
@@ -1197,6 +1198,10 @@ form{
     left: 97%;
     padding: 0.5rem;
     color: var(--color-secondary-variant-1-deep);
+}
+
+#error-cancel {
+    cursor: pointer;
 }
 
 .log-out{
@@ -1266,6 +1271,8 @@ form{
     .logo {
         height: 50px;
         padding: 8px;
+        font-size: 1.2em;
+        font-weight: 300;
     }
 
     .main-menu {

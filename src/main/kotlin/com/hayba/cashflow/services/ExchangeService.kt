@@ -245,7 +245,7 @@ class ExchangeService(
     }
 
 
-    @Scheduled(fixedDelay = 8_000L)
+    @Scheduled(fixedDelay = 5000L)
     fun retryFailedRfqs() {
         log.info("Retrying failed rfqs")
         val eligibleStatuses = listOf(ExchangeStatus.RFQ_CREATION_FAILED)
@@ -270,7 +270,7 @@ class ExchangeService(
         }
     }
 
-    @Scheduled(fixedDelay = 5000L)
+    @Scheduled(fixedDelay = 4000L)
     fun pollExchange() {
         log.info("Starting to poll exchange")
         val eligibleStatuses = listOf(

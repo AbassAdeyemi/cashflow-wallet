@@ -121,8 +121,8 @@ quoteLink.on('click', '.proceed', function (){
         $('.error-html p').text("Please fund wallet to pay wallet fee for this transaction")
         $('.error-html').removeClass("hidden")
     } else {
-        const newBalance = balance - walletFee
-        localStorage.setItem("balance", JSON.stringify(newBalance))
+        const newBalance = (balance - walletFee).toFixed(2)
+        localStorage.setItem("balance", newBalance)
         $('#rollerOverlay').css('display', 'flex');
         $('.roller').show();
         const data = {
@@ -170,7 +170,7 @@ quoteLink.on('click', '.cancel', function (){
 function checkOrderCompleted(customerDID) {
     const maxPollCount = 4
     let pollCount = 0;
-    const intervalTime = 4000; // 6 seconds
+    const intervalTime = 4000; // 4 seconds
 
     const intervalId = setInterval(function() {
 

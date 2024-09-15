@@ -33,7 +33,6 @@ to download their portable dids on registration because it would be needed to lo
 when a customer's didUri has been removed from the local storage. The wallet saves the 
 users' verifiable credential in their encrypted jwts and only decrypts the
 jwts only to extract users' profile information.
-
 - **_Customer Satisfaction:_** The wallet application tracks customer's satisfaction by providing
 a ratings tab where customers can rate a pfi at the end of each transaction. The scoring provided
 by each customer contributes to what culminates in the average rating of each pfi. The
