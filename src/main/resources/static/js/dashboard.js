@@ -33,11 +33,31 @@ function makeProfileRequest(url) {
 }
 
 function generateUserProfile(profileData) {
+    const kccContainer = $('.kcc-container')
+
+    if(profileData.credentials.length === 0) {
+        kccContainer.append(`<p class="no-items">No credentials to display</p>`)
+    }
     for (const credential of profileData.credentials) {
-        $('.issuer').html(credential.issuer);
-        $('.issuanceDate').html(credential.issuanceDate);
-        $('.expiration').html(credential.expirationDate);
-        $('.credType').html(credential.type)
+        const credentialHtml = ` <div class="userKcc">
+                    <div class="issue">
+                        <span for="">Issuer: </span>
+                        <p class="issuer">${credential.issuer}</p>
+                    </div>
+                    <div class="cred-type">
+                        <span for="">Type: </span>
+                        <p class="credType">${credential.type}</p>
+                    </div>
+                    <div class="issue-date">
+                        <span for="">Issuance Date: </span>
+                        <p class="issuanceDate">${credential.issuanceDate}</p>
+                    </div>
+                    <div class="exp-date">
+                        <span for="">Expiration Date: </span>
+                        <p class="expiration">${credential.expirationDate}</p>
+                    </div>
+                </div>`
+        kccContainer.append(credentialHtml)
     }
 }
 
@@ -74,21 +94,25 @@ function addOrderHistory(customerDID) {
 }
 
 function appendHistory(orders) {
-    const orderContainer = $('.recent-transactions tbody')
+    const orderContainer = $('.recent-transactions')
+    const thead = $('.recent-transactions thead')
+    const tbody = $('.recent-transactions tbody')
+    if(orders.length === 0) {
+        thead.addClass("hidden")
+        orderContainer.append(`<p class="no-items">No transactions to display</p>`)
+    }
     for(const order of orders) {
         const row = $('<tr></tr>');
         row.append('<td>' +order.pfiName+ '</td>')
         row.append('<td>' +(order.payin.amount + " "+order.payin.currencyCode)+ '</td>')
         row.append('<td>' +(order.payout.amount + " "+order.payout.currencyCode)+ '</td>')
         row.append('<td>' +order.completedAt+ '</td>')
-        orderContainer.append(row)
+        tbody.append(row)
     }
 }
 
 $('.log-out').on('click', function () {
-    localStorage.removeItem("didUri");
-    localStorage.setItem("balance", "0")
-    console.log(localStorage.getItem("balance"))
+   localStorage.clear()
    window.location.href = '/cashflow/import'
 });
 

@@ -260,10 +260,6 @@
     font-size: 1rem;
 }
 
-.downloadKey{
-cursor: pointer;
-}
-
 .content {
     flex: 1;
     overflow: auto;
@@ -387,8 +383,18 @@ cursor: pointer;
     width: 50%;
     padding-left: 30%;
 }
-.success-but button{
-    /* width: 80%; */
+
+.no-items{
+    /*display: inline-block;*/
+    font-size: 18px;
+    color: red;
+    padding: 15px 25px;
+    /*border: 2px solid #ddd;*/
+    /*border-radius: 8px;*/
+    /*background-color: #f9f9f9;*/
+    /*box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);*/
+    text-align: center;
+    margin: 20px auto;
 }
 
 .balance-container {
@@ -447,7 +453,7 @@ cursor: pointer;
     background: var(--color-secondary-variant-3);
 }
 
-.kyc-container {
+.kcc-container {
     color: var(--color-text);
     background: var(--color-secondary-variant-1);
     height: 40vh;
@@ -456,14 +462,14 @@ cursor: pointer;
     padding: 1rem;
 }
 
-.kyc-container h3 {
-    /* padding: 1rem; */
-    font-size: 1em;
-    text-align: center;
-    margin-bottom: 2rem;
+.kcc-container h3 {
+     padding-bottom: 1rem;
+    /*font-size: 1em;*/
+    /*text-align: center;*/
+    /*margin-bottom: 2rem;*/
 }
 
-.userKyc{
+.userKcc{
     background: var(--color-primary);
     width: 26%;
     margin: 0 auto;

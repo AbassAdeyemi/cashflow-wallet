@@ -32,7 +32,7 @@ function displayLatestQuote(quote) {
     pTags.push($('<p class="quote-content"></p>').text('Your Currency: ' + quote.payin.currencyCode))
     pTags.push($('<p class="quote-content"></p>').text('Amount To Receive: ' + quote.payout.amount))
     pTags.push($('<p class="quote-content"></p>').text('Pfi Currency: ' + quote.payout.currencyCode))
-    pTags.push($('<p class="quote-content"></p>').text('Wallet Fee: 0.05$'))
+    pTags.push($('<p class="quote-content"></p>').text(`Wallet Fee: ${walletFee}$`))
     if(quote.payin.paymentInstruction) {
         if(quote.payin.paymentInstruction?.link) {
             pTags.push($('<p class="quote-content"></p>').text('Payment Link: ' + quote.payin.paymentInstruction.link))
@@ -46,8 +46,16 @@ function displayLatestQuote(quote) {
 }
 
 function existingQuoteTable(items) {
-    const $tableBody = $('.existing-quote-container tbody');
-    $tableBody.empty();
+    const existingQuoteContainer = $('.existing-quote-container');
+    const tableHead = $('.existing-quote-container thead');
+    const tableBody = $('.existing-quote-container tbody');
+
+    if(items.length === 0) {
+       tableHead.addClass("hidden")
+        existingQuoteContainer.append(`<p class="no-items">No quotes to display</p>`)
+    }
+
+    tableBody.empty();
 
     for (const item of items) {
         let date = new Date(item.expiresAt);
@@ -79,7 +87,7 @@ function existingQuoteTable(items) {
         buttonCell.append(button);
         row.append(buttonCell);
 
-        $tableBody.append(row);
+        tableBody.append(row);
     }
 }
 
@@ -157,7 +165,7 @@ quoteLink.on('click', '.cancel', function (){
         data: JSON.stringify(data),
         contentType: 'application/json',
         success: function() {
-           window.location.href = '/cashflow//dashboard'
+           window.location.href = '/cashflow/dashboard'
         },
         error: function() {
             console.log('Submission failed:');
@@ -207,8 +215,9 @@ const isOrderCompleted = (items, exchangeId) => {
 function hideRollerAndDisplayError() {
     $('#rollerOverlay').css('display', 'none');
     $('.roller').hide()
-    $('.error-html p').text('Error occurred. Could not process quote')
-    $('.error-html').removeClass('hidden')
+    const errorHtml =  $('.error-html')
+    errorHtml.append(`<p>Error occurred. Could not process quote. Please try again</p>`)
+    errorHtml.removeClass('hidden')
 }
 
 $('#error-cancel').on('click', () => {

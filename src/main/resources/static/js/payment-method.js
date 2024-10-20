@@ -205,8 +205,9 @@ function getPaymentMethod(key) {
 function hideRollerAndDisplayError() {
     $('#rollerOverlay').css('display', 'none');
     $('.roller').hide()
-    $('.error-html p').text('Error occurred. Could not request for quote')
-    $('.error-html').removeClass('hidden')
+    const errorHtml =  $('.error-html')
+    errorHtml.append(`<p>Error occurred. Could not request for quote. Please try again</p>`)
+    errorHtml.removeClass('hidden')
 }
 
 function getValidationErrors(payInHtmls, payOutHtmls, sendInput) {

@@ -32,8 +32,8 @@ class OfferingService(
     private val log = LoggerFactory.getLogger(OfferingService::class.java)
 
     fun getAvailablePairs(): List<OrderCurrencyPair> {
-        return pfiRepository.findAll().flatMap { it.offeringCurrencyPairs }
-            .map { OrderCurrencyPair(fromCurrency = it.fromCurrency, toCurrency = it.toCurrency) }.distinct()
+        return pfiRepository.findAll().asSequence().flatMap { it.offeringCurrencyPairs }
+            .map { OrderCurrencyPair(fromCurrency = it.fromCurrency, toCurrency = it.toCurrency) }.distinct().toList()
     }
 
     fun getMatchingOfferings(currencyPair: OrderCurrencyPair): List<OfferingDTO> {

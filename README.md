@@ -50,12 +50,8 @@ clearly illustrated in the form of stars filled based on the numbers accumulated
 
 #### Running with docker
 
-- You can use `mvn` if you have maven installed or `./mvnw` on linux or macos 
-and `mvnw.cmd` on windows
-- Run `mvn clean install` to install the dependencies of the application and also
-build the docker image.
-- After the image has been built, navigate to the docker-compose folder and run
-`docker-compose up -d`.
+- Pull image from docker hub with this command `docker pull abassadey/cashflow-wallet:latest`
+- Navigate to the docker-compose folder and run `docker-compose up -d`.
 - Ensure that ports `8082` and `27017` are not in use or configure your application and 
 mongodb ports in the compose file accordingly.
 
